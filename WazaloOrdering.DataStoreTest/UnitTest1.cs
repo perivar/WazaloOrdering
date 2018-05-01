@@ -18,6 +18,10 @@ namespace WazaloOrdering.DataStoreTest
             foreach (var order in orders)
             {
                 Log.Information(order.ToString());
+                foreach (var lineItem in order.LineItems)
+                {
+                    Log.Information(lineItem.Title);
+                }                
             }
         }
     }

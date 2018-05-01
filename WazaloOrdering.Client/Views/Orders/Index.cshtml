@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Orders</h2>
+
+@model IEnumerable<ShopifyOrder>
+
+<table width="100%">
+
+@foreach(ShopifyOrder order in Model) 
+{
+    <tr>
+        <td>@order.Id</td>
+        <td>@order.Name</td>
+        <td>@order.TotalPrice</td>
+    </tr>
+
+    @foreach(ShopifyOrderLineItem lineItem in order.LineItems) 
+    {
+    <tr>
+        <td>@lineItem.Quantity</td>
+        <td>@lineItem.Sku</td>
+        <td>@lineItem.Title</td>
+    </tr>
+    }
+
+}
+
+</table>
+
+    
+

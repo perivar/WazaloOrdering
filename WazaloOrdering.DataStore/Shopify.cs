@@ -131,21 +131,52 @@ namespace WazaloOrdering.DataStore
                             var refundItems = refund.refund_line_items;
                             foreach (var refundItem in refundItems)
                             {
-                                refundSubTotal += (decimal) refundItem.subtotal;
-                                refundTotalTax += (decimal) refundItem.total_tax;
+                                refundSubTotal += (decimal)refundItem.subtotal;
+                                refundTotalTax += (decimal)refundItem.total_tax;
                             }
 
                             var orderAdjustments = refund.order_adjustments;
                             foreach (var orderAdjustment in orderAdjustments)
                             {
-                                refundSubTotal += -((decimal) orderAdjustment.amount);
-                                refundTotalTax += -((decimal) orderAdjustment.tax_amount);
+                                refundSubTotal += -((decimal)orderAdjustment.amount);
+                                refundTotalTax += -((decimal)orderAdjustment.tax_amount);
                             }
                         }
 
                         // perform refund
                         shopifyOrder.TotalPrice -= refundSubTotal;
                         shopifyOrder.TotalTax -= refundTotalTax;
+                    }
+
+                    if (order.line_items != null)
+                    {
+                        var shopifyOrderLineItems = new List<ShopifyOrderLineItem>();
+                        foreach (var line_item in order.line_items)
+                        {
+                            var shopifyOrderLineItem = new ShopifyOrderLineItem();
+                            shopifyOrderLineItem.FulfillableQuantity = line_item.fulfillable_quantity;
+                            shopifyOrderLineItem.ProductId = line_item.product_id;
+                            shopifyOrderLineItem.Quantity = line_item.quantity;
+                            shopifyOrderLineItem.Sku = line_item.sku;
+                            shopifyOrderLineItem.Title = line_item.title;
+                            shopifyOrderLineItems.Add(shopifyOrderLineItem);
+                        }
+                        shopifyOrder.LineItems = shopifyOrderLineItems;
+                    }
+
+                    if (order.fulfillments != null)
+                    {
+                        /*
+                        var status = order.fulfillments.status;
+                        var tracking_company = order.fulfillments.tracking_company;
+                        var tracking_number = order.fulfillments.tracking_number;
+                        var updated_at = order.fulfillments.updated_at;
+
+                        if (tracking_number != null && tracking_number.Type != JTokenType.Null)
+                        {
+                            shopifyOrder.TrackingNumber = tracking_number;
+                        }
+                        */
                     }
 
                     shopifyOrders.Add(shopifyOrder);
