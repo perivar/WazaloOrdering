@@ -1,0 +1,16 @@
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\xunit.runner.reporters.netcoreapp10.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\xunit.runner.utility.netcoreapp10.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.deps.json
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.runtimeconfig.json
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.runtimeconfig.dev.json
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.pdb
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStore.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\bin\Debug\netcoreapp2.0\WazaloOrdering.DataStore.pdb
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.csproj.CoreCompileInputs.cache
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.AssemblyInfoInputs.cache
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.AssemblyInfo.cs
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.csproj.CopyComplete
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStoreTest\obj\Debug\netcoreapp2.0\WazaloOrdering.DataStoreTest.pdb

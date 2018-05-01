@@ -1,0 +1,62 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26124.0
+MinimumVisualStudioVersion = 15.0.26124.0
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WazaloOrdering.Client", "WazaloOrdering.Client\WazaloOrdering.Client.csproj", "{AC12674F-5722-477B-82C6-0788886A1D28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WazaloOrdering.DataStore", "WazaloOrdering.DataStore\WazaloOrdering.DataStore.csproj", "{5A55204B-7282-409F-892E-C6A71E716592}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WazaloOrdering.DataStoreTest", "WazaloOrdering.DataStoreTest\WazaloOrdering.DataStoreTest.csproj", "{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|x64.ActiveCfg = Debug|x64
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|x64.Build.0 = Debug|x64
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|x86.ActiveCfg = Debug|x86
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Debug|x86.Build.0 = Debug|x86
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|x64.ActiveCfg = Release|x64
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|x64.Build.0 = Release|x64
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|x86.ActiveCfg = Release|x86
+		{AC12674F-5722-477B-82C6-0788886A1D28}.Release|x86.Build.0 = Release|x86
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|x64.ActiveCfg = Debug|x64
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|x64.Build.0 = Debug|x64
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|x86.ActiveCfg = Debug|x86
+		{5A55204B-7282-409F-892E-C6A71E716592}.Debug|x86.Build.0 = Debug|x86
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|x64.ActiveCfg = Release|x64
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|x64.Build.0 = Release|x64
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|x86.ActiveCfg = Release|x86
+		{5A55204B-7282-409F-892E-C6A71E716592}.Release|x86.Build.0 = Release|x86
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|x64.ActiveCfg = Debug|x64
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|x64.Build.0 = Debug|x64
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|x86.ActiveCfg = Debug|x86
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Debug|x86.Build.0 = Debug|x86
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|x64.ActiveCfg = Release|x64
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|x64.Build.0 = Release|x64
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|x86.ActiveCfg = Release|x86
+		{54BF3E42-0582-413E-9C4C-D71D5D62E3D8}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal

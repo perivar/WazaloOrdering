@@ -1,0 +1,9 @@
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\bin\Debug\netstandard2.0\WazaloOrdering.DataStore.deps.json
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\bin\Debug\netstandard2.0\WazaloOrdering.DataStore.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\bin\Debug\netstandard2.0\WazaloOrdering.DataStore.pdb
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\WazaloOrdering.DataStore.csproj.CoreCompileInputs.cache
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\WazaloOrdering.DataStore.AssemblyInfoInputs.cache
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\WazaloOrdering.DataStore.AssemblyInfo.cs
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\WazaloOrdering.DataStore.dll
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\WazaloOrdering.DataStore.pdb
+C:\Users\pnerseth\My Projects\WazaloOrdering\WazaloOrdering.DataStore\obj\Debug\netstandard2.0\UserSecretsAssemblyInfo.cs
