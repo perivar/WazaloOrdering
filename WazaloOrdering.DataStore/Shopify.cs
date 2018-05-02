@@ -155,10 +155,23 @@ namespace WazaloOrdering.DataStore
                         {
                             var shopifyOrderLineItem = new ShopifyOrderLineItem();
                             shopifyOrderLineItem.FulfillableQuantity = line_item.fulfillable_quantity;
+                            shopifyOrderLineItem.FulfillmentService = line_item.fulfillment_service;
+                            shopifyOrderLineItem.FulfillmentStatus = line_item.fulfillment_status;
+                            shopifyOrderLineItem.Grams = line_item.grams;
+                            shopifyOrderLineItem.Id = line_item.id;
+                            shopifyOrderLineItem.Price = line_item.price;
                             shopifyOrderLineItem.ProductId = line_item.product_id;
                             shopifyOrderLineItem.Quantity = line_item.quantity;
+                            shopifyOrderLineItem.RequiresShipping = line_item.requires_shipping;
                             shopifyOrderLineItem.Sku = line_item.sku;
                             shopifyOrderLineItem.Title = line_item.title;
+                            shopifyOrderLineItem.VariantId = line_item.variant_id;
+                            shopifyOrderLineItem.VariantTitle = line_item.variant_title;
+                            shopifyOrderLineItem.Vendor = line_item.vendor;
+                            shopifyOrderLineItem.Name = line_item.name;
+                            shopifyOrderLineItem.GiftCard = line_item.gift_card;
+                            shopifyOrderLineItem.Taxable = line_item.taxable;
+                            shopifyOrderLineItem.TotalDiscount = line_item.total_discount;
                             shopifyOrderLineItems.Add(shopifyOrderLineItem);
                         }
                         shopifyOrder.LineItems = shopifyOrderLineItems;
