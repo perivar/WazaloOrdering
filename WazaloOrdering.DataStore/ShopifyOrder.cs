@@ -31,7 +31,8 @@ namespace WazaloOrdering.DataStore
 
         public string Note { get; set; }
 
-        public string TrackingNumber { get; set; }
+        // Fulfillments
+        public List<ShopifyOrderFulfillment> Fulfillments { get; set; }
 
         public List<ShopifyOrderLineItem> LineItems { get; set; }
 
@@ -69,5 +70,23 @@ namespace WazaloOrdering.DataStore
         public bool GiftCard { get; set; }
         public bool Taxable { get; set; }
         public decimal TotalDiscount { get; set; }
+    }
+
+    public class ShopifyOrderFulfillment
+    {
+        public long Id { get; set; }
+        public long OrderId { get; set; }
+        public string Status { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string Service { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public string TrackingCompany { get; set; }
+        public string ShipmentStatus { get; set; }
+        public string LocationId { get; set; }
+        public string TrackingNumber { get; set; }
+        //public string TrackingNumbers { get; set; }
+        public string TrackingUrl { get; set; }
+        //public string TrackingUrls { get; set; }
+        //public string Receipt { get; set; }: {},
     }
 }

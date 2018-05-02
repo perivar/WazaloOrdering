@@ -6,8 +6,8 @@
 
 @model IEnumerable<ShopifyOrder>
 
-<table width="100%">
-
+<table class="table">
+<tbody>
 @foreach(ShopifyOrder order in Model) 
 {
     <tr>
@@ -25,8 +25,21 @@
     </tr>
     }
 
+    @if (order.Fulfillments != null)
+    {
+        @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) 
+        {
+        <tr>
+            <td>@fulfillment.Id</td>
+            <td>@fulfillment.Status</td>
+            <td>@fulfillment.TrackingNumber</td>
+            <td>@fulfillment.TrackingUrl</td>            
+        </tr>
+        }
+    }
 }
 
+</tbody>
 </table>
 
     

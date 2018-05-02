@@ -148,7 +148,7 @@ namespace WazaloOrdering.DataStore
                         shopifyOrder.TotalTax -= refundTotalTax;
                     }
 
-                    if (order.line_items != null)
+                    if (order.line_items.HasValues)
                     {
                         var shopifyOrderLineItems = new List<ShopifyOrderLineItem>();
                         foreach (var line_item in order.line_items)
@@ -164,21 +164,29 @@ namespace WazaloOrdering.DataStore
                         shopifyOrder.LineItems = shopifyOrderLineItems;
                     }
 
-                    if (order.fulfillments != null)
+                    if (order.fulfillments.HasValues)
                     {
-                        /*
-                        var status = order.fulfillments.status;
-                        var tracking_company = order.fulfillments.tracking_company;
-                        var tracking_number = order.fulfillments.tracking_number;
-                        var updated_at = order.fulfillments.updated_at;
-
-                        if (tracking_number != null && tracking_number.Type != JTokenType.Null)
+                        var shopifyOrderFulfillments = new List<ShopifyOrderFulfillment>();
+                        foreach (var fulfillment in order.fulfillments)
                         {
-                            shopifyOrder.TrackingNumber = tracking_number;
+                            var shopifyOrderFulfillment = new ShopifyOrderFulfillment();
+                            shopifyOrderFulfillment.Id = fulfillment.id;
+                            shopifyOrderFulfillment.OrderId = fulfillment.order_id;
+                            shopifyOrderFulfillment.Status = fulfillment.status;
+                            shopifyOrderFulfillment.CreatedAt = fulfillment.created_at;
+                            shopifyOrderFulfillment.Service = fulfillment.service;
+                            shopifyOrderFulfillment.UpdatedAt = fulfillment.updated_at;
+                            shopifyOrderFulfillment.TrackingCompany = fulfillment.tracking_company;
+                            shopifyOrderFulfillment.ShipmentStatus = fulfillment.shipment_status;
+                            shopifyOrderFulfillment.LocationId = fulfillment.location_id;
+                            shopifyOrderFulfillment.TrackingNumber = fulfillment.tracking_number;
+                            shopifyOrderFulfillment.TrackingUrl = fulfillment.tracking_url;
+                            shopifyOrderFulfillments.Add(shopifyOrderFulfillment);
                         }
-                        */
+                        shopifyOrder.Fulfillments = shopifyOrderFulfillments;
                     }
 
+                    // add the order
                     shopifyOrders.Add(shopifyOrder);
                 }
             }
