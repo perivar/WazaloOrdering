@@ -8,7 +8,7 @@ namespace WazaloOrdering.DataStore
     public class DataFactory
     {
         static public IConfiguration Configuration { get; set; }
-        
+
         public static List<ShopifyOrder> GetShopifyOrders()
         {
             var shopifyOrders = new List<ShopifyOrder>();
@@ -24,12 +24,22 @@ namespace WazaloOrdering.DataStore
 
             // add date filter, created_at_min and created_at_max
             var date = new Date();
-            var from = date.FirstDayOfTheYear; 
+            var from = date.CurrentDate.AddDays(-5);
             var to = date.CurrentDate;
             string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);
             shopifyOrders = Shopify.ReadShopifyOrders(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, querySuffix);
             Console.Out.WriteLine("Successfully read all Shopify orders ...");
-            
+
+            // read and store the product image url
+            foreach (var shopifyOrder in shopifyOrders)
+            {
+                foreach (var shopifyOrderLineItem in shopifyOrder.LineItems)
+                {
+                    var shopifyProductImages = Shopify.ReadShopifyProductImages(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, shopifyOrderLineItem.ProductId);
+                    shopifyOrderLineItem.ProductImages = shopifyProductImages;
+                }
+            }
+
             return shopifyOrders;
         }
     }

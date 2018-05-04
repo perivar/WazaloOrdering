@@ -11,6 +11,74 @@ namespace WazaloOrdering.DataStore
 {
     public class Shopify
     {
+        public static int CountShopifyProductImages(string shopifyDomain, string shopifyAPIKey, string shopifyAPIPassword, string productId)
+        {
+            // GET /admin/products/#{product_id}/images/count.json
+            // Retrieve a count of all the product images
+
+            string url = String.Format("https://{0}/admin/products/{1}/count.json", shopifyDomain, productId);
+
+            using (var client = new WebClient())
+            {
+                // make sure we read in utf8
+                client.Encoding = System.Text.Encoding.UTF8;
+
+                // have to use the header field since normal GET url doesn't work, i.e.
+                // string url = String.Format("https://{0}:{1}@{2}/admin/orders.json", shopifyAPIKey, shopifyAPIPassword, shopifyDomain);
+                // https://stackoverflow.com/questions/28177871/shopify-and-private-applications
+                client.Headers.Add("X-Shopify-Access-Token", shopifyAPIPassword);
+                string json = client.DownloadString(url);
+
+                // parse json
+                dynamic jsonDe = JsonConvert.DeserializeObject(json);
+
+                return jsonDe.count;
+            }
+        }
+
+        public static List<ShopifyProductImage> ReadShopifyProductImages(string shopifyDomain, string shopifyAPIKey, string shopifyAPIPassword, string productId)
+        {
+            var productImages = new List<ShopifyProductImage>();
+
+            // GET /admin/products/#{product_id}/images.json
+            // Retrieve a all product images for a product
+
+            string url = String.Format("https://{0}/admin/products/{1}/images.json", shopifyDomain, productId);
+
+            using (var client = new WebClient())
+            {
+                // make sure we read in utf8
+                client.Encoding = System.Text.Encoding.UTF8;
+
+                // have to use the header field since normal GET url doesn't work, i.e.
+                // string url = String.Format("https://{0}:{1}@{2}/admin/orders.json", shopifyAPIKey, shopifyAPIPassword, shopifyDomain);
+                // https://stackoverflow.com/questions/28177871/shopify-and-private-applications
+                client.Headers.Add("X-Shopify-Access-Token", shopifyAPIPassword);
+                string json = client.DownloadString(url);
+
+                // parse json
+                dynamic jsonDe = JsonConvert.DeserializeObject(json);
+
+                foreach (var image in jsonDe.images)
+                {
+                    var shopifyProductImage = new ShopifyProductImage();
+                    shopifyProductImage.Id = image.id;
+                    shopifyProductImage.ProductId = image.product_id;
+                    shopifyProductImage.Position = image.position;
+                    shopifyProductImage.CreatedAt = image.created_at;
+                    shopifyProductImage.UpdatedAt = image.updated_at;
+                    shopifyProductImage.Alt = image.alt;
+                    shopifyProductImage.Width = image.width;
+                    shopifyProductImage.Height = image.height;
+                    shopifyProductImage.Src = image.src;
+
+                    productImages.Add(shopifyProductImage);
+                }
+            }
+
+            return productImages;
+        }
+
         public static int CountShopifyOrders(string shopifyDomain, string shopifyAPIKey, string shopifyAPIPassword, string querySuffix)
         {
             // GET /admin/orders/count.json

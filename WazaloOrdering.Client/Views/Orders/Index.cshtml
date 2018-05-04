@@ -1,71 +1,49 @@
-@{
-    ViewData["Title"] = "Index";
-}
+@{ ViewData["Title"] = "Index"; }
 
-<h2>Wazalo Orders</h2>
+<h3>Wazalo Orders for ------</h3>
 
 @model IEnumerable<ShopifyOrder>
 
-<table class="table table-bordered">
-    @foreach(ShopifyOrder order in Model) 
-    {
-    <tr>
-        <td>
-            <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a>
-            &nbsp;@order.CreatedAt.ToString("MM/dd/yyyy HH:mm")
-            &nbsp;Customer: <span class="text-info">@order.CustomerName</span>
-        <td align="center"><a class="btn btn-warning" target="_blank" href="">Order</a></td>
-    </tr>
-    <tr>
-        <td>
-            Financial: 
-            @{ 
-                if (order.FinancialStatus.Equals("paid")) {
-                    <span class="text-success">@order.FinancialStatus</span>
-                } else {
-                    <span class="text-warning">@order.FinancialStatus</span>
-                }
-            } 
-            &nbsp;
-            Fulfillment: 
-            @{ 
-                if (order.FulfillmentStatus.Equals("fulfilled")) {
-                    <span class="text-success">@order.FulfillmentStatus</span>
-                } else {
-                    <span class="text-warning">@order.FulfillmentStatus</span>
-                }
-            }                         
-            &nbsp;Supplier: 
-            &nbsp;Shipped: 0 / 0
-        </td>
-        <td align="center">@order.TotalPrice</td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <table class="table">
-            @foreach(ShopifyOrderLineItem lineItem in order.LineItems) 
-            {
-                <tr class="active">
-                    <td class="col-md-1"><small>@lineItem.ProductId</small></td>
-                    <td class="col-md-4"><span class="text-info">@lineItem.Title</span><br><small>@lineItem.Sku</small></td>
-                    <td class="col-md-2">@lineItem.VariantTitle</td>
-                    <td class="col-md-2">
-                    @if (order.Fulfillments != null)
-                    {
-                        @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) 
-                        {
-                            <a target="_blank" href="@fulfillment.TrackingUrl">@fulfillment.TrackingNumber</a>                            
-                        }
+    <table class="table table-bordered">
+        @foreach(ShopifyOrder order in Model) {
+        <tr>
+            <td>
+                <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a> &nbsp;@order.CreatedAt.ToString("MM/dd/yyyy HH:mm") &nbsp;Customer: <span class="text-info">@order.CustomerName</span>
+                <td align="center"><a class="btn btn-warning" target="_blank" href="">Order Product</a></td>
+        </tr>
+        <tr>
+            <td>
+                Financial: @{ if (order.FinancialStatus.Equals("paid")) {
+                <span class="text-success">@order.FinancialStatus</span> } else {
+                <span class="text-warning">@order.FinancialStatus</span> } } &nbsp; Fulfillment: @{ if (order.FulfillmentStatus.Equals("fulfilled")) {
+                <span class="text-success">@order.FulfillmentStatus</span> } else {
+                <span class="text-warning">@order.FulfillmentStatus</span> } } &nbsp;Supplier: &nbsp;Shipped: 0 / 0
+            </td>
+            <td align="center">@order.TotalPrice</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <table class="table">
+                    @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
+                    <tr class="active">
+                        <td class="col-md-1">@{ 
+                            ShopifyProductImage productImage = lineItem.ProductImages.First();
+                            <img width="80" class="img-responsive" src="@productImage.Src" alt="@productImage.Alt">
+                            }
+                        </td>
+                        <td class="col-md-4"><span class="text-info">@lineItem.Title</span><br><small>@lineItem.Sku</small></td>
+                        <td class="col-md-2">@lineItem.VariantTitle</td>
+                        <td class="col-md-2">
+                            @if (order.Fulfillments != null) { @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) {
+                            <a target="_blank" href="@fulfillment.TrackingUrl">@fulfillment.TrackingNumber</a> } }
+                        </td>
+                        <td class="col-md-1">@lineItem.Quantity</td>
+                        <td class="col-md-1"><span class="text-muted"><small>x</small></span></td>
+                        <td class="col-md-1">@lineItem.Price</td>
+                    </tr>
                     }
-                    </td>
-                    <td class="col-md-1">@lineItem.Quantity</td>
-                    <td class="col-md-1"><span class="text-muted"><small>x</small></span></td>
-                    <td class="col-md-1">@lineItem.Price</td>
-                </tr>
-            }
-            </table>
-        </td>
-    </tr>
-    }
-</table>
-
+                </table>
+            </td>
+        </tr>
+        }
+    </table>
