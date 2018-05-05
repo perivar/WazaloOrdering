@@ -1,17 +1,19 @@
 @{ ViewData["Title"] = "Index"; } 
 @model IEnumerable<ShopifyOrder>
 
+<a asp-action="" asp-route-dateStart="@ViewData["dateStart"]" asp-route-dateEnd="@ViewData["dateEnd"]">Test Link</a>
+
     <div class="container">
-        <div class="row">
+        <div class="row align-items-center mt-3">
             <div class="col-md-10">
-                <h3>Your orders for 2017-08-18 - 2017-09-17</h3>
+                <h3>Your orders for @ViewData["dateStart"] - @ViewData["dateEnd"]</h3>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-primary">Get All Tracking Codes</button>
+                <button class="btn btn-primary float-right">Get All Tracking Codes</button>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6">
+        <div class="row align-items-center mt-3">
+            <div class="col-md-3">
                 <div class="input-group">
                     <input type="text" class="form-control" placeholder="Filter...">
                     <span class="input-group-btn">
@@ -19,25 +21,25 @@
                     </span>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="input-group date" data-provide="datepicker" data-date-language="no" data-date-format="mm-dd-yyyy">
+            <div class="col-md-3">
+                <div class="input-group date" data-provide="datepicker" data-date-language="no" data-date-format="yyyy-mm-dd">
                     <input type="text" class="form-control">
                     <div class="input-group-addon">
                         <span class="glyphicon glyphicon-th"></span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
-                <div class="input-group date" data-provide="datepicker" data-date-today-btn="true" data-date-language="no" data-date-format="mm-dd-yyyy">
+            <div class="col-md-3">
+                <div class="input-group date" data-provide="datepicker" data-date-today-btn="true" data-date-language="no" data-date-format="yyyy-mm-dd ">
                     <input type="text" class="form-control">
                     <div class="input-group-addon">
                         <span class="glyphicon glyphicon-th"></span>
                     </div>
                 </div>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <div class="dropdown">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="btn btn-secondary dropdown-toggle float-right" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Select Date Range
                           </a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
@@ -57,28 +59,42 @@
         </div>
 
         @foreach(ShopifyOrder order in Model) {
-        <div class="row border border-primary">
-            <div class="col-md-10">
-                <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a> &nbsp;@order.CreatedAt.ToString("MM/dd/yyyy HH:mm") &nbsp;Customer: <span class="text-info">@order.CustomerName</span>
+        <div class="row align-items-center mt-3">
+            <div class="col-md-1">
+                <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a>
             </div>
             <div class="col-md-2">
-                <a class="btn btn-warning" target="_blank" href="">Order Product</a>
+                @order.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            </div>
+            <div class="col-md-3">
+                Customer: <span class="text-info">@order.CustomerName</span>
+            </div>
+            <div class="col-md-6">
+                <a class="btn btn-warning float-right" target="_blank" href="">Order Product</a>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-10">
+        <div class="row align-items-center">
+            <div class="col-md-2">
                 Financial: @{ if (order.FinancialStatus.Equals("paid")) {
                 <span class="text-success">@order.FinancialStatus</span> } else {
-                <span class="text-warning">@order.FinancialStatus</span> } } &nbsp; Fulfillment: @{ if (order.FulfillmentStatus.Equals("fulfilled")) {
-                <span class="text-success">@order.FulfillmentStatus</span> } else {
-                <span class="text-warning">@order.FulfillmentStatus</span> } } &nbsp;Supplier: &nbsp;Shipped: 0 / 0
+                <span class="text-warning">@order.FinancialStatus</span> } } 
             </div>
-            <div class="col-md-2">@order.TotalPrice</div>
+            <div class="col-md-3">
+                Fulfillment: @{ if (order.FulfillmentStatus.Equals("fulfilled")) {
+                <span class="text-success">@order.FulfillmentStatus</span> } else {
+                <span class="text-warning">@order.FulfillmentStatus</span> } } 
+            </div>
+            <div class="col-md-2">             
+                Supplier:
+            </div>
+            <div class="col-md-2">             
+                Shipped: 0 / 0
+            </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                     @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
-                    <div class="row bg-light text-dark border">
+                    <div class="row align-items-center bg-light text-dark border">
                         <div class="col-md-2">@{ ShopifyProductImage productImage = lineItem.ProductImages.First();
                             <img width="80" class="img" src="@productImage.Src" alt="@productImage.Alt"> }
                         </div>
@@ -88,12 +104,21 @@
                             @if (order.Fulfillments != null) { @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) {
                             <a target="_blank" href="@fulfillment.TrackingUrl">@fulfillment.TrackingNumber</a> } }
                         </div>
-                        <div class="col-md-1">@lineItem.Quantity</div>
-                        <div class="col-md-1"><span class="text-muted"><small>x</small></span></div>
-                        <div class="col-md-1">@lineItem.Price</div>
+                        <div class="col-md-1">
+                            <div class="float-right">@lineItem.Quantity</div>                                                
+                        </div>
+                        <div class="col-md-1"><span class="text-muted float-right"><small>x</small></span></div>
+                        <div class="col-md-1">
+                            <div class="float-right">@lineItem.Price</div>                        
+                        </div>
                     </div>
                     }
             </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="float-right"><small>Total Cost: </small>@order.TotalPrice</div>
+            </div>            
         </div>
         }
    </div>
