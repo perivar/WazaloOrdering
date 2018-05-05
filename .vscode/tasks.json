@@ -9,13 +9,20 @@
                 "build",
                 "${workspaceFolder}/WazaloOrdering.Client/WazaloOrdering.Client.csproj"
             ],
-            "problemMatcher": "$msCompile"
+            "problemMatcher": "$msCompile",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         },
         {
             "label": "test",
             "command": "dotnet",
             "type": "shell",
-            "group": "test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "args": [
                 "test",
                 "${workspaceFolder}/WazaloOrdering.DataStoreTest/WazaloOrdering.DataStoreTest.csproj"
@@ -30,7 +37,9 @@
         {
             "label": "dotnet version",
             "command": "dotnet",
-            "args" : ["--version"],
+            "args": [
+                "--version"
+            ],
             "type": "shell",
             "presentation": {
                 "reveal": "always",
@@ -40,9 +49,47 @@
             "problemMatcher": "$msCompile"
         },
         {
+            "label": "npm version",
+            "command": "npm",
+            "args": [
+                "--version"
+            ],
+            "type": "shell",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "problemMatcher": "$msCompile"
+        },
+        ,
+        {
+            "label": "npm install (package.json)",
+            "command": "npm",
+            "args": [
+                "install"
+            ],
+            "type": "shell",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/WazaloOrdering.Client"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
             "label": "publish release win10-x64",
-			"command": "dotnet",
-            "args" : ["publish", "--configuration", "Release", "--runtime", "win10-x64"],
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "--configuration",
+                "Release",
+                "--runtime",
+                "win10-x64"
+            ],
             "type": "shell",
             "presentation": {
                 "reveal": "always",
@@ -53,8 +100,14 @@
         },
         {
             "label": "publish release linux-x64",
-			"command": "dotnet",
-            "args" : ["publish", "--configuration", "Release", "--runtime", "linux-x64"],
+            "command": "dotnet",
+            "args": [
+                "publish",
+                "--configuration",
+                "Release",
+                "--runtime",
+                "linux-x64"
+            ],
             "type": "shell",
             "presentation": {
                 "reveal": "always",
@@ -62,6 +115,6 @@
                 "focus": true
             },
             "problemMatcher": "$msCompile"
-        }		
+        }
     ]
 }

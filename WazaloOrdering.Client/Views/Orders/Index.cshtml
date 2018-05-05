@@ -4,6 +4,291 @@
 
 @model IEnumerable<ShopifyOrder>
 
+<div class="container">
+  <div>
+    <div>
+      <div class="row">
+        <div class="col-xs-4">
+          <input class="form-control" placeholder="Enter Keywords" type="text">
+        </div>
+        <div class="col-xs-2">
+          <input class="btn btn-info" type="submit" value="Filter">
+        </div>
+        <div class="col-xs-2 relative" id="datepickerstart">
+          <div class="input-icon-block">
+            <input class="date form-control" data-format="yyyy-MM-dd" name="filter[date_from]" placeholder="YYYY-MM-DD" type="text" value="">
+            <div class="add-on">
+              <button class="btn-transparent" type="button"><svg class="icon-calendar input-icon">
+              <use xlink:href="/img/app-icons.svg#icon-calendar" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="relative col-xs-2" id="datepickerend">
+          <div class="input-icon-block">
+            <input class="date form-control" data-format="yyyy-MM-dd" name="filter[date_to]" placeholder="YYYY-MM-DD" type="text" value="">
+            <div class="add-on">
+              <button class="btn-transparent" type="button"><svg class="icon-calendar input-icon">
+              <use xlink:href="/img/app-icons.svg#icon-calendar" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg></button>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-2">
+          <div class="dropdown">
+            <button class="btn btn-default btn-block dropdown-toggle btn-icon btn-icon-right" data-toggle="dropdown" type="button"><span class="btn-icon-text">Select Date Range</span> <span class="btn-icon-wrap"><svg class="icon icon-arrow-more">
+            <use xlink:href="/img/app-icons.svg#icon-arrow-more" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg></span></button>
+            <div class="dropdown-menu dropdown-menu-right dropdown-select">
+              <ul>
+                <li>
+                  <a href="#">Today</a>
+                </li>
+                <li>
+                  <a href="#">Yesterday</a>
+                </li>
+                <li>
+                  <a href="#">Last 7 days</a>
+                </li>
+                <li>
+                  <a href="#">Last 30 days</a>
+                </li>
+                <li>
+                  <a href="#">Last 90 days</a>
+                </li>
+                <li>
+                  <a href="#">Week to date</a>
+                </li>
+                <li>
+                  <a href="#">Month to date</a>
+                </li>
+                <li>
+                  <a href="#">Quarter to date</a>
+                </li>
+                <li>
+                  <a href="#">Year to date</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel filter-orders margin-small-top container-flex">
+        <ul>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Fulfillment Status: <span>All</span></a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-filter-orders">
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-fulfillment color-info">
+                    <use xlink:href="/img/app-icons.svg#icon-fulfillment" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success fulfillment color-info" style="display: none;"></span> <span class="text">Unknown</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-fulfillment color-success">
+                    <use xlink:href="/img/app-icons.svg#icon-fulfillment" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success fulfillment color-success" style="display: none;"></span> <span class="text">Fulfilled</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-unfulfilled color-warning">
+                    <use xlink:href="/img/app-icons.svg#icon-unfulfilled" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success unfulfilled color-warning" style="display: none;"></span> <span class="text">Unfulfilled</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-fulfillment color-warning">
+                    <use xlink:href="/img/app-icons.svg#icon-fulfillment" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success fulfillment color-warning" style="display: none;"></span> <span class="text">Partial</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Financial Status: <span>All</span></a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-filter-orders">
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-financial color-warning">
+                    <use xlink:href="/img/app-icons.svg#icon-financial" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success financial color-warning" style="display: none;"></span> <span class="text">Partially paid</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-financial color-success">
+                    <use xlink:href="/img/app-icons.svg#icon-financial" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success financial color-success" style="display: none;"></span> <span class="text">Paid</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-financial color-warning">
+                    <use xlink:href="/img/app-icons.svg#icon-financial" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success financial color-warning" style="display: none;"></span> <span class="text">Partially refunded</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-financial color-danger">
+                    <use xlink:href="/img/app-icons.svg#icon-financial" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success financial color-danger" style="display: none;"></span> <span class="text">Refunded</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li><!---->
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Flags Status: <span>All</span></a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-filter-orders">
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark-o">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark-o" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark-o" style="display: none;"></span> <span class="text">None</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark color-info">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark color-info" style="display: none;"></span> <span class="text">Grey</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark color-primary">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark color-primary" style="display: none;"></span> <span class="text">Blue</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark color-success">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark color-success" style="display: none;"></span> <span class="text">Green</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark color-warning">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark color-warning" style="display: none;"></span> <span class="text">Yellow</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-bookmark color-danger">
+                    <use xlink:href="/img/app-icons.svg#icon-bookmark" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success bookmark color-danger" style="display: none;"></span> <span class="text">Red</span> <span class="badge badge-success float-right" style="display: none;"></span></label>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Order Status: <span>All</span></a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-filter-orders">
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-warning" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-warning"></span> <span class="text">To Order</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-primary" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-primary"></span> <span class="text">Order Placed</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-primary" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-primary"></span> <span class="text">In Processing</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-success" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-success"></span> <span class="text">Shipped</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-success" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-success"></span> <span class="text">Partially Shipped</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-circle-color color-info" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success circle-color color-info"></span> <span class="text">Cancelled</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button">Sources Status: <span>All</span></a>
+            <div class="dropdown-menu dropdown-menu-right">
+              <ul class="dropdown-filter-orders">
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-ali-supplier filter-icon" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success ali-supplier filter-icon"></span> <span class="text">Ali Express</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+                <li>
+                  <form>
+                    <label class="no-style"><input class="mr5" type="checkbox"> <svg class="no-shrink icon-oberlo-supplier filter-icon" style="display: none;">
+                    <use xlink:href="/img/app-icons.svg#icon-undefined" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <span class="success oberlo-supplier filter-icon"></span> <span class="text">Oberlo Supply</span> <span class="badge badge-success float-right" style="display: none;">0</span></label>
+                  </form>
+                </li>
+              </ul>
+            </div>
+          </li><!---->
+        </ul>
+      </div>
+    </div>
+    <div class="row" style="">
+      <div class="col-md-6 space-small-top space-small-bottom container-flex">
+        <h3 class="display-inline">Your orders for 2017-08-18 - 2017-09-17</h3>
+        <div class="dropdown dropdown-sm margin-left display-inline">
+          <a aria-expanded="false" aria-haspopup="true" class="btn btn-default btn-sm dropdown-toggle btn-dropdown" data-toggle="dropdown" href="#"><span class="btn-icon-text">Export</span> <span class="btn-icon-wrap"><svg class="icon-open">
+          <use xlink:href="/img/app-icons.svg#icon-open" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg></span></a>
+          <div class="dropdown-menu dropdown-menu-right dropdown-sm">
+            <ul>
+              <li>
+                <a href="#">CSV</a>
+              </li>
+              <li>
+                <a href="#">XLS</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 space-small-top space-small-bottom container-flex">
+        <button class="btn btn-primary get-all-tracking-codes">Get All Tracking Codes</button>
+      </div>
+    </div>
+    <div class="panel small-padding margin-small-top margin-bottom attention-panel" style="display: none;">
+      <div class="panel-body">
+        <div class="container-flex flex-between">
+          <div class="container-flex">
+            <div class="svg-container no-shrink">
+              <svg class="icon-attention-circle margin-small-right">
+              <use xlink:href="/img/app-icons.svg#icon-attention-circle" xmlns:xlink="http://www.w3.org/1999/xlink"></use></svg> <!---->
+               <!---->
+            </div>
+            <div class="ml5 mr10">
+              <div>
+                <strong>You have shopify checkout settings set to "Automatically fulfill the orders's line items".</strong>
+              </div>Please turn off this settings to allow Oberlo track your orders and update fulfillment. <a href="http://help.oberlo.com/orders/missing-orders/how-automatically-fulfilled-orders-appear-in-oberlo" target="_blank">Why do you need this?</a> <span></span>
+            </div>
+          </div>
+          <div class="container-flex">
+            <a class="btn btn-default btn-sm float-right">Turn off auto fulfilment</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+
     <table class="table table-bordered">
         @foreach(ShopifyOrder order in Model) {
         <tr>
