@@ -24,7 +24,7 @@ namespace WazaloOrdering.DataStore
 
             // add date filter, created_at_min and created_at_max
             var date = new Date();
-            var from = date.CurrentDate.AddDays(-5);
+            var from = date.CurrentDate.AddDays(-20);
             var to = date.CurrentDate;
             string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);
             shopifyOrders = Shopify.ReadShopifyOrders(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, querySuffix);
