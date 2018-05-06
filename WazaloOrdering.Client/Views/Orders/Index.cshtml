@@ -11,19 +11,19 @@
             </div>
         </div>
 
-        <form id="filtering" method="POST">
+        <form id="filterOrdersForm" asp-controller="Orders" asp-action="FilterOrders" method="post">
         <div class="row align-items-center mt-3">
             <div class="col-md-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Filter..."> 
+                    <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..."> 
                     <div class="input-group-append">
-                        <button class="btn btn-info" type="button">Filter</button>
+                        <button class="btn btn-info" type="submit">Filter</button>
                     </div>                                  
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input id="startDate" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateStart"]">
+                    <input id="dateStart" name="dateStart" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateStart"]">
                     <div class="input-group-append input-group-addon">
                         <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
                     </div>
@@ -31,7 +31,7 @@
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input id="endDate" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateEnd"]">
+                    <input id="dateEnd" name="dateEnd" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateEnd"]">
                     <div class="input-group-append input-group-addon">
                         <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
                     </div>
@@ -134,7 +134,7 @@
                 autoclose: true
             })
             .on('changeDate', function(e) {
-                $('#filtering').submit();
+                $('#filterOrdersForm').submit();
             });
         });
     </script>

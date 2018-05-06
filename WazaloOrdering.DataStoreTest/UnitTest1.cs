@@ -14,7 +14,7 @@ namespace WazaloOrdering.DataStoreTest
                 .WriteTo.File("consoleapp.log")
                 .CreateLogger();
 
-            var orders = DataFactory.GetShopifyOrders();
+            var orders = DataFactory.GetShopifyOrders("status=any");
             foreach (var order in orders)
             {
                 Log.Information(order.ToString());

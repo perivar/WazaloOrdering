@@ -13,11 +13,52 @@ namespace WazaloOrdering.Client.Controllers
     {
         // 
         // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06
+        [HttpGet]
+
         public IActionResult Index(string dateStart, string dateEnd)
         {
+            Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
+            DateTime from = fromto.Item1;
+            DateTime to = fromto.Item2;
+
+            // add date filter, created_at_min and created_at_max
+            string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);
+
+            var orders = DataFactory.GetShopifyOrders(querySuffix);
+            ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            return View("~/Views/Orders/Index.cshtml", orders);
+        }
+
+        [HttpPost("FilterOrders")]
+        [ValidateAntiForgeryToken]
+        public IActionResult FilterOrders(IFormCollection formCollection)
+        {
+            try
+            {
+                string dateStart = HttpContext.Request.Form["dateStart"];
+                string dateEnd = HttpContext.Request.Form["dateEnd"];
+                return Index(dateStart, dateEnd);
+            }
+            catch
+            {
+                return Index(null, null);
+            }
+        }
+
+        // 
+        // GET: /Orders/Order/ 
+        public IActionResult Order(string orderId, int numTimes = 1)
+        {
+            ViewData["Message"] = "OrderId " + orderId;
+            ViewData["NumTimes"] = numTimes;
+            return View();
+        }
+
+        private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd) {
             var date = new Date();
 
-            DateTime from = date.CurrentDate.AddDays(-20);
+            DateTime from = date.CurrentDate.AddDays(-14);
             DateTime to = date.CurrentDate;
             if (dateStart != null)
             {
@@ -47,32 +88,8 @@ namespace WazaloOrdering.Client.Controllers
                 catch (System.Exception)
                 {
                 }
-            }
-
-            // add date filter, created_at_min and created_at_max
-            string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);
-
-            var orders = DataFactory.GetShopifyOrders(querySuffix);
-            ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            return View(orders);
-        }
-
-        [HttpPost]
-        public IActionResult Index(FormCollection frmobj)
-        {
-            string dateStart = frmobj["dateStart"];
-            string dateEnd = frmobj["dateEnd"];
-            return Content("Hello");
-        }
-
-        // 
-        // GET: /Orders/Order/ 
-        public IActionResult Order(string orderId, int numTimes = 1)
-        {
-            ViewData["Message"] = "OrderId " + orderId;
-            ViewData["NumTimes"] = numTimes;
-            return View();
+            }        
+            return new Tuple<DateTime, DateTime>(from, to);    
         }
     }
 }
