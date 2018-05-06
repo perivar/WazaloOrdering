@@ -5,6 +5,7 @@ using System.Text.Encodings.Web;
 using System.Collections.Generic;
 using WazaloOrdering.DataStore;
 using System.Globalization;
+using Microsoft.AspNetCore.Http;
 
 namespace WazaloOrdering.Client.Controllers
 {
@@ -55,6 +56,14 @@ namespace WazaloOrdering.Client.Controllers
             ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             return View(orders);
+        }
+
+        [HttpPost]
+        public IActionResult Index(FormCollection frmobj)
+        {
+            string dateStart = frmobj["dateStart"];
+            string dateEnd = frmobj["dateEnd"];
+            return Content("Hello");
         }
 
         // 

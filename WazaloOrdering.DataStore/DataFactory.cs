@@ -22,6 +22,7 @@ namespace WazaloOrdering.DataStore
 
             shopifyOrders = Shopify.ReadShopifyOrders(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, querySuffix);
 
+/*
             // read and store the product image url
             foreach (var shopifyOrder in shopifyOrders)
             {
@@ -31,7 +32,7 @@ namespace WazaloOrdering.DataStore
                     shopifyOrderLineItem.ProductImages = shopifyProductImages;
                 }
             }
-
+ */
             return shopifyOrders;
         }
     }
