@@ -19,7 +19,7 @@ namespace WazaloOrdering.Client.Controllers
         {
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
             DateTime from = fromto.Item1;
-            DateTime to = fromto.Item2;
+            DateTime to = Utils.AbsoluteEnd(fromto.Item2);
 
             // add date filter, created_at_min and created_at_max
             string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);

@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input id="dateStart" name="dateStart" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateStart"]">
+                    <input name="dateStart" type="text" class="date-from form-control py-2 border-right-0 border" value="@ViewData["dateStart"]">
                     <div class="input-group-append input-group-addon">
                         <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
                     </div>
@@ -31,7 +31,7 @@
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input id="dateEnd" name="dateEnd" type="text" class="form-control py-2 border-right-0 border" value="@ViewData["dateEnd"]">
+                    <input name="dateEnd" type="text" class="date-to form-control py-2 border-right-0 border" value="@ViewData["dateEnd"]">
                     <div class="input-group-append input-group-addon">
                         <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
                     </div>
@@ -39,20 +39,20 @@
             </div>
             <div class="col-md-2">
                 <div class="dropdown">
-                    <a class="btn btn-secondary dropdown-toggle float-right" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-secondary dropdown-toggle float-right" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Select Date Range
-                    </a>
+                    </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item" href="#">Today</a>
-                        <a class="dropdown-item" href="#">Yesterday</a>
-                        <a class="dropdown-item" href="#">Last 7 days</a>
-                        <a class="dropdown-item" href="#">Last 14 days</a>
-                        <a class="dropdown-item" href="#">Last 30 days</a>
-                        <a class="dropdown-item" href="#">Last 90 days</a>
-                        <a class="dropdown-item" href="#">Week to date</a>
-                        <a class="dropdown-item" href="#">Month to date</a>
-                        <a class="dropdown-item" href="#">Quarter to date</a>
-                        <a class="dropdown-item" href="#">Year to date</a>
+                        <button class="dropdown-item" type="button" value="today">Today</button>
+                        <button class="dropdown-item" type="button" value="yesterday">Yesterday</button>
+                        <button class="dropdown-item" type="button" value="last_7">Last 7 days</button>
+                        <button class="dropdown-item" type="button" value="last_14">Last 14 days</button>
+                        <button class="dropdown-item" type="button" value="last_30">Last 30 days</button>
+                        <button class="dropdown-item" type="button" value="last_90">Last 90 days</button>
+                        <button class="dropdown-item" type="button" value="week_to_date">Week to date</button>
+                        <button class="dropdown-item" type="button" value="month_to_date">Month to date</button>
+                        <button class="dropdown-item" type="button" value="quarter_to_date">Quarter to date</button>
+                        <button class="dropdown-item" type="button" value="year_to_date">Year to date</button>
                     </div>
                 </div>
             </div>
@@ -125,10 +125,19 @@
     </div>
 
 @section Scripts {
+    @* Check also
+    // https://github.com/MauriceZ/lannister/blob/9dfa9c19e6ecd120db240be6ccb419a0212169ec/app/assets/javascripts/dashboard.js
+    // https://github.com/MauriceZ/lannister/blob/5befba458a14904599feb5d456619651791f02ce/app/views/dashboard/index.html.erb
+    *@
     <script type="text/javascript">
         $(function() { // will trigger when the document is ready
+            var $dateFromPicker = $('.date-from');
+            var $dateToPicker = $('.date-to');      
+            var $dateDropdown = $('.dropdownYX'); 
             
-            $('.input-group.date').datepicker({
+            var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
+
+            $dateFromPicker.datepicker({
                 format: "yyyy-mm-dd",
                 language: "no",
                 autoclose: true
@@ -136,6 +145,71 @@
             .on('changeDate', function(e) {
                 $('#filterOrdersForm').submit();
             });
+
+            $dateToPicker.datepicker({
+                format: "yyyy-mm-dd",
+                language: "no",
+                autoclose: true,
+                todayBtn: true
+            })
+            .on('changeDate', function(e) {
+                $('#filterOrdersForm').submit();
+            });
+
+            $(".dropdown-item").click(function(e){
+                //e.preventDefault(); // cancel the link behaviour
+
+                var dateRange = $(this).val();
+                var today = new Date();
+                var dateFrom = new Date();
+                var dateTo = new Date();
+
+                switch (dateRange) {
+                case 'today':
+                    break;
+                case 'yesterday':
+                    dateFrom = new Date(today.getTime() - daysToMillis(1));
+                    dateTo = dateFrom;
+                    break;
+                case 'last_7':
+                    dateFrom = new Date(today.getTime() - daysToMillis(7));
+                    break;
+                case 'last_14':
+                    dateFrom = new Date(today.getTime() - daysToMillis(14));
+                    break;
+                case 'last_30':
+                    dateFrom = new Date(today.getTime() - daysToMillis(30));
+                    break;
+                case 'last_90':
+                    dateFrom = new Date(today.getTime() - daysToMillis(90));
+                    break;
+                case 'week_to_date':
+                    dateFrom = new Date(today.getTime() - daysToMillis(today.getDay()));
+                    break;
+                case 'month_to_date':
+                    dateFrom.setDate(1);
+                    break;
+                case 'quarter_to_date':
+                    dateFrom.setMonth((Math.floor((today.getMonth() + 3) / 3) - 1) * 3);
+                    dateFrom.setDate(1);
+                    break;
+                case 'year_to_date':
+                    dateFrom.setMonth(0);
+                    dateFrom.setDate(1);
+                    break;
+                default:
+                    return;
+                    break;
+                }     
+
+                $dateFromPicker.datepicker('setDate', dateFrom);
+                $dateToPicker.datepicker('setDate', dateTo);                
+            });      
+
         });
+
+        function daysToMillis(numDays) {
+            return numDays * 86400000; // 86400000 ms in a day
+        }
     </script>
 }
