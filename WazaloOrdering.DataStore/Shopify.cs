@@ -203,6 +203,7 @@ namespace WazaloOrdering.DataStore
             shopifyOrder.CustomerAddress2 = order.customer.default_address.address2;
             shopifyOrder.CustomerCity = order.customer.default_address.city;
             shopifyOrder.CustomerZipCode = order.customer.default_address.zip;
+            shopifyOrder.CustomerCountry = order.customer.default_address.country;
 
             // check if cancelled_at exists (meaning the order has been cancelled)
             var cancelledAt = order.cancelled_at;

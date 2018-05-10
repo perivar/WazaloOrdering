@@ -28,6 +28,7 @@ namespace WazaloOrdering.DataStore
         public string CustomerAddress2 { get; set; }
         public string CustomerZipCode { get; set; }
         public string CustomerCity { get; set; }
+        public string CustomerCountry { get; set; }
 
         public string Note { get; set; }
 

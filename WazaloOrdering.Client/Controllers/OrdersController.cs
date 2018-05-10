@@ -34,6 +34,7 @@ namespace WazaloOrdering.Client.Controllers
         {
             try
             {
+                string filter = HttpContext.Request.Form["filter"];
                 string dateStart = HttpContext.Request.Form["dateStart"];
                 string dateEnd = HttpContext.Request.Form["dateEnd"];
                 return Index(dateStart, dateEnd);
@@ -46,6 +47,18 @@ namespace WazaloOrdering.Client.Controllers
 
         // GET: /Orders/Order/123134
         public IActionResult Order(string id)
+        {
+            // add field filter
+            string querySuffix = "";
+
+            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+
+            ViewData["id"] = id;
+            return View(order);
+        }
+
+        // GET: /Orders/PurchaseOrder/123134
+        public IActionResult PurchaseOrder(string id)
         {
             // add field filter
             string querySuffix = "";

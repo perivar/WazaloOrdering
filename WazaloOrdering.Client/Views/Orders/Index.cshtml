@@ -1,6 +1,6 @@
 @model IEnumerable<ShopifyOrder> 
 @{ 
-    ViewData["Title"] = "Index"; 
+    ViewData["Title"] = "Orders"; 
 } 
 
     <div class="container">
@@ -81,7 +81,6 @@
         $(function() { // will trigger when the document is ready
             var $dateFromPicker = $('.date-from');
             var $dateToPicker = $('.date-to');      
-            var $dateDropdown = $('.dropdownYX'); 
             
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
@@ -156,7 +155,12 @@
 
                 $dateFromPicker.datepicker('setDate', dateFrom);
                 $dateToPicker.datepicker('setDate', dateTo);                
-            });      
+            });    
+
+            $(".clickable-rowDISABLED").click(function(e) {
+                e.preventDefault(); // cancel the link behaviour
+                window.location.href = $(this).data("href");
+            });  
 
         });
 

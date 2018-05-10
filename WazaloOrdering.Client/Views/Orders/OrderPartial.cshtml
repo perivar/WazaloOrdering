@@ -16,7 +16,7 @@
     </div>
     <div class="col-md-6">
         @if(isOrderPage) {
-
+            <a class="btn btn-warning float-right" asp-controller="Orders" asp-action="PurchaseOrder" asp-route-id="@order.Id">Create Purchase Order</a>
         } else {
             <a class="btn btn-warning float-right" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">Order Product</a>
         }        
@@ -34,16 +34,16 @@
         <span class="text-warning">@order.FulfillmentStatus</span> }
     </div>
     <div class="col-md-2">
-        Supplier:
+        @*Supplier:*@
     </div>
     <div class="col-md-2">
-        Shipped: 0 / 0
+        @*Shipped: 0 / 0*@
     </div>
 </div>
 <div class="row">
     <div class="col-md-12">
         @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
-        <div class="row align-items-center bg-light text-dark border">
+        <div class="row align-items-center bg-light text-dark border clickable-row" data-href="@Url.Action("Order", "Orders", new { Id = @order.Id})">
             <div class="col-md-2">@{ if (lineItem.ProductImages != null) { ShopifyProductImage productImage = lineItem.ProductImages.First();
                 <img width="80" class="img" src="@productImage.Src" alt="@productImage.Alt"> } }
             </div>
