@@ -1,12 +1,15 @@
+@model ShopifyOrder
 @{
     ViewData["Title"] = "Welcome";
+    var order = @Model; 
 }
 
-<h2>Welcome</h2>
+<h2>Order: @ViewData["id"]</h2>
 
-<ul>
-    @for (int i = 0; i < (int)ViewData["NumTimes"]; i++)
-    {
-        <li>@ViewData["Message"]</li>
+@await Html.PartialAsync(
+    "OrderPartial",
+    Model,
+    new ViewDataDictionary(this.ViewData) {
+        { "orderPage", true }
     }
-</ul>
+)

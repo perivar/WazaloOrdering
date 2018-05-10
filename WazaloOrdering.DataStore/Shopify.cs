@@ -108,9 +108,6 @@ namespace WazaloOrdering.DataStore
             // GET /admin/orders.json?limit=250&page=1
             // Retrieve a list of Orders(OPEN Orders by default, use status=any for ALL orders)
 
-            // GET /admin/orders/#{id}.json
-            // Receive a single Order
-
             // parameters:
             // financial_status=paid
             // status=any
@@ -140,136 +137,172 @@ namespace WazaloOrdering.DataStore
 
                 foreach (var order in jsonDe.orders)
                 {
-                    var shopifyOrder = new ShopifyOrder();
-
-                    shopifyOrder.Id = order.id;
-                    shopifyOrder.CreatedAt = order.created_at;
-                    shopifyOrder.ProcessedAt = order.processed_at;
-                    shopifyOrder.UpdatedAt = order.updated_at;
-                    shopifyOrder.Name = order.name;
-                    shopifyOrder.FinancialStatus = order.financial_status;
-                    string fulfillmentStatusTmp = order.fulfillment_status;
-                    fulfillmentStatusTmp = (fulfillmentStatusTmp == null ? "unfulfilled" : fulfillmentStatusTmp);
-                    shopifyOrder.FulfillmentStatus = fulfillmentStatusTmp;
-
-                    shopifyOrder.Gateway = order.gateway;
-                    if (null != order.payment_details)
-                    {
-                        shopifyOrder.PaymentId = string.Format("{0} {1}", order.payment_details.credit_card_company, order.payment_details.credit_card_bin);
-                    }
-
-                    shopifyOrder.TotalPrice = order.total_price;
-                    shopifyOrder.TotalTax = order.total_tax;
-                    shopifyOrder.CustomerEmail = order.contact_email;
-
-                    shopifyOrder.CustomerName = string.Format("{0} {1}", order.customer.first_name, order.customer.last_name);
-                    shopifyOrder.CustomerAddress = order.customer.default_address.address1;
-                    shopifyOrder.CustomerAddress2 = order.customer.default_address.address2;
-                    shopifyOrder.CustomerCity = order.customer.default_address.city;
-                    shopifyOrder.CustomerZipCode = order.customer.default_address.zip;
-
-                    // check if cancelled_at exists (meaning the order has been cancelled)
-                    var cancelledAt = order.cancelled_at;
-                    if (cancelledAt != null && cancelledAt.Type != JTokenType.Null)
-                    {
-                        shopifyOrder.CancelledAt = order.cancelled_at;
-                    }
-
-                    // also add note
-                    shopifyOrder.Note = order.note;
-
-                    if (shopifyOrder.Name.Equals("#1103"))
-                    {
-                        // breakpoint here
-                    }
-                    if (shopifyOrder.CustomerEmail.Equals("janne.braseth@gmail.com"))
-                    {
-                        // breakpoint here
-                    }
-
-                    if (order.refunds != null)
-                    {
-                        decimal refundSubTotal = 0;
-                        decimal refundTotalTax = 0;
-
-                        // calculate refund
-                        foreach (var refund in order.refunds)
-                        {
-                            var refundItems = refund.refund_line_items;
-                            foreach (var refundItem in refundItems)
-                            {
-                                refundSubTotal += (decimal)refundItem.subtotal;
-                                refundTotalTax += (decimal)refundItem.total_tax;
-                            }
-
-                            var orderAdjustments = refund.order_adjustments;
-                            foreach (var orderAdjustment in orderAdjustments)
-                            {
-                                refundSubTotal += -((decimal)orderAdjustment.amount);
-                                refundTotalTax += -((decimal)orderAdjustment.tax_amount);
-                            }
-                        }
-
-                        // perform refund
-                        shopifyOrder.TotalPrice -= refundSubTotal;
-                        shopifyOrder.TotalTax -= refundTotalTax;
-                    }
-
-                    if (order.line_items.HasValues)
-                    {
-                        var shopifyOrderLineItems = new List<ShopifyOrderLineItem>();
-                        foreach (var line_item in order.line_items)
-                        {
-                            var shopifyOrderLineItem = new ShopifyOrderLineItem();
-                            shopifyOrderLineItem.FulfillableQuantity = line_item.fulfillable_quantity;
-                            shopifyOrderLineItem.FulfillmentService = line_item.fulfillment_service;
-                            shopifyOrderLineItem.FulfillmentStatus = line_item.fulfillment_status;
-                            shopifyOrderLineItem.Grams = line_item.grams;
-                            shopifyOrderLineItem.Id = line_item.id;
-                            shopifyOrderLineItem.Price = line_item.price;
-                            shopifyOrderLineItem.ProductId = line_item.product_id;
-                            shopifyOrderLineItem.Quantity = line_item.quantity;
-                            shopifyOrderLineItem.RequiresShipping = line_item.requires_shipping;
-                            shopifyOrderLineItem.Sku = line_item.sku;
-                            shopifyOrderLineItem.Title = line_item.title;
-                            shopifyOrderLineItem.VariantId = line_item.variant_id;
-                            shopifyOrderLineItem.VariantTitle = line_item.variant_title;
-                            shopifyOrderLineItem.Vendor = line_item.vendor;
-                            shopifyOrderLineItem.Name = line_item.name;
-                            shopifyOrderLineItem.GiftCard = line_item.gift_card;
-                            shopifyOrderLineItem.Taxable = line_item.taxable;
-                            shopifyOrderLineItem.TotalDiscount = line_item.total_discount;
-                            shopifyOrderLineItems.Add(shopifyOrderLineItem);
-                        }
-                        shopifyOrder.LineItems = shopifyOrderLineItems;
-                    }
-
-                    if (order.fulfillments.HasValues)
-                    {
-                        var shopifyOrderFulfillments = new List<ShopifyOrderFulfillment>();
-                        foreach (var fulfillment in order.fulfillments)
-                        {
-                            var shopifyOrderFulfillment = new ShopifyOrderFulfillment();
-                            shopifyOrderFulfillment.Id = fulfillment.id;
-                            shopifyOrderFulfillment.OrderId = fulfillment.order_id;
-                            shopifyOrderFulfillment.Status = fulfillment.status;
-                            shopifyOrderFulfillment.CreatedAt = fulfillment.created_at;
-                            shopifyOrderFulfillment.Service = fulfillment.service;
-                            shopifyOrderFulfillment.UpdatedAt = fulfillment.updated_at;
-                            shopifyOrderFulfillment.TrackingCompany = fulfillment.tracking_company;
-                            shopifyOrderFulfillment.ShipmentStatus = fulfillment.shipment_status;
-                            shopifyOrderFulfillment.LocationId = fulfillment.location_id;
-                            shopifyOrderFulfillment.TrackingNumber = fulfillment.tracking_number;
-                            shopifyOrderFulfillment.TrackingUrl = fulfillment.tracking_url;
-                            shopifyOrderFulfillments.Add(shopifyOrderFulfillment);
-                        }
-                        shopifyOrder.Fulfillments = shopifyOrderFulfillments;
-                    }
+                    var shopifyOrder = ParseShopifyOrder(order);
 
                     // add the order
                     shopifyOrders.Add(shopifyOrder);
                 }
             }
+        }
+
+        public static ShopifyOrder ReadShopifyOrder(string shopifyDomain, string shopifyAPIKey, string shopifyAPIPassword, string orderId, string querySuffix)
+        {
+            // GET /admin/orders/#{id}.json
+            // Receive a single Order
+
+            // Get only particular fields
+            // GET /admin/orders/#{order_id}.json?fields=id,line_items,name,total_price
+
+            string url = String.Format("https://{0}/admin/orders/{1}.json?{2}", shopifyDomain, orderId, querySuffix);
+
+            using (var client = new WebClient())
+            {
+                // make sure we read in utf8
+                client.Encoding = System.Text.Encoding.UTF8;
+
+                // have to use the header field since normal GET url doesn't work, i.e.
+                // https://stackoverflow.com/questions/28177871/shopify-and-private-applications
+                client.Headers.Add("X-Shopify-Access-Token", shopifyAPIPassword);
+                string json = client.DownloadString(url);
+
+                // parse json
+                dynamic jsonDe = JsonConvert.DeserializeObject(json);
+
+                var shopifyOrder = ParseShopifyOrder(jsonDe.order);
+
+                return shopifyOrder;
+            }
+        }
+
+        private static ShopifyOrder ParseShopifyOrder(dynamic order)
+        {
+            var shopifyOrder = new ShopifyOrder();
+
+            shopifyOrder.Id = order.id;
+            shopifyOrder.CreatedAt = order.created_at;
+            shopifyOrder.ProcessedAt = order.processed_at;
+            shopifyOrder.UpdatedAt = order.updated_at;
+            shopifyOrder.Name = order.name;
+            shopifyOrder.FinancialStatus = order.financial_status;
+            string fulfillmentStatusTmp = order.fulfillment_status;
+            fulfillmentStatusTmp = (fulfillmentStatusTmp == null ? "unfulfilled" : fulfillmentStatusTmp);
+            shopifyOrder.FulfillmentStatus = fulfillmentStatusTmp;
+
+            shopifyOrder.Gateway = order.gateway;
+            if (null != order.payment_details)
+            {
+                shopifyOrder.PaymentId = string.Format("{0} {1}", order.payment_details.credit_card_company, order.payment_details.credit_card_bin);
+            }
+
+            shopifyOrder.TotalPrice = order.total_price;
+            shopifyOrder.TotalTax = order.total_tax;
+            shopifyOrder.CustomerEmail = order.contact_email;
+
+            shopifyOrder.CustomerName = string.Format("{0} {1}", order.customer.first_name, order.customer.last_name);
+            shopifyOrder.CustomerAddress = order.customer.default_address.address1;
+            shopifyOrder.CustomerAddress2 = order.customer.default_address.address2;
+            shopifyOrder.CustomerCity = order.customer.default_address.city;
+            shopifyOrder.CustomerZipCode = order.customer.default_address.zip;
+
+            // check if cancelled_at exists (meaning the order has been cancelled)
+            var cancelledAt = order.cancelled_at;
+            if (cancelledAt != null && cancelledAt.Type != JTokenType.Null)
+            {
+                shopifyOrder.CancelledAt = order.cancelled_at;
+            }
+
+            // also add note
+            shopifyOrder.Note = order.note;
+
+            if (shopifyOrder.Name.Equals("#1103"))
+            {
+                // breakpoint here
+            }
+            if (shopifyOrder.CustomerEmail.Equals("janne.braseth@gmail.com"))
+            {
+                // breakpoint here
+            }
+
+            if (order.refunds != null)
+            {
+                decimal refundSubTotal = 0;
+                decimal refundTotalTax = 0;
+
+                // calculate refund
+                foreach (var refund in order.refunds)
+                {
+                    var refundItems = refund.refund_line_items;
+                    foreach (var refundItem in refundItems)
+                    {
+                        refundSubTotal += (decimal)refundItem.subtotal;
+                        refundTotalTax += (decimal)refundItem.total_tax;
+                    }
+
+                    var orderAdjustments = refund.order_adjustments;
+                    foreach (var orderAdjustment in orderAdjustments)
+                    {
+                        refundSubTotal += -((decimal)orderAdjustment.amount);
+                        refundTotalTax += -((decimal)orderAdjustment.tax_amount);
+                    }
+                }
+
+                // perform refund
+                shopifyOrder.TotalPrice -= refundSubTotal;
+                shopifyOrder.TotalTax -= refundTotalTax;
+            }
+
+            if (order.line_items.HasValues)
+            {
+                var shopifyOrderLineItems = new List<ShopifyOrderLineItem>();
+                foreach (var line_item in order.line_items)
+                {
+                    var shopifyOrderLineItem = new ShopifyOrderLineItem();
+                    shopifyOrderLineItem.FulfillableQuantity = line_item.fulfillable_quantity;
+                    shopifyOrderLineItem.FulfillmentService = line_item.fulfillment_service;
+                    shopifyOrderLineItem.FulfillmentStatus = line_item.fulfillment_status;
+                    shopifyOrderLineItem.Grams = line_item.grams;
+                    shopifyOrderLineItem.Id = line_item.id;
+                    shopifyOrderLineItem.Price = line_item.price;
+                    shopifyOrderLineItem.ProductId = line_item.product_id;
+                    shopifyOrderLineItem.Quantity = line_item.quantity;
+                    shopifyOrderLineItem.RequiresShipping = line_item.requires_shipping;
+                    shopifyOrderLineItem.Sku = line_item.sku;
+                    shopifyOrderLineItem.Title = line_item.title;
+                    shopifyOrderLineItem.VariantId = line_item.variant_id;
+                    shopifyOrderLineItem.VariantTitle = line_item.variant_title;
+                    shopifyOrderLineItem.Vendor = line_item.vendor;
+                    shopifyOrderLineItem.Name = line_item.name;
+                    shopifyOrderLineItem.GiftCard = line_item.gift_card;
+                    shopifyOrderLineItem.Taxable = line_item.taxable;
+                    shopifyOrderLineItem.TotalDiscount = line_item.total_discount;
+                    shopifyOrderLineItems.Add(shopifyOrderLineItem);
+                }
+                shopifyOrder.LineItems = shopifyOrderLineItems;
+            }
+
+            if (order.fulfillments.HasValues)
+            {
+                var shopifyOrderFulfillments = new List<ShopifyOrderFulfillment>();
+                foreach (var fulfillment in order.fulfillments)
+                {
+                    var shopifyOrderFulfillment = new ShopifyOrderFulfillment();
+                    shopifyOrderFulfillment.Id = fulfillment.id;
+                    shopifyOrderFulfillment.OrderId = fulfillment.order_id;
+                    shopifyOrderFulfillment.Status = fulfillment.status;
+                    shopifyOrderFulfillment.CreatedAt = fulfillment.created_at;
+                    shopifyOrderFulfillment.Service = fulfillment.service;
+                    shopifyOrderFulfillment.UpdatedAt = fulfillment.updated_at;
+                    shopifyOrderFulfillment.TrackingCompany = fulfillment.tracking_company;
+                    shopifyOrderFulfillment.ShipmentStatus = fulfillment.shipment_status;
+                    shopifyOrderFulfillment.LocationId = fulfillment.location_id;
+                    shopifyOrderFulfillment.TrackingNumber = fulfillment.tracking_number;
+                    shopifyOrderFulfillment.TrackingUrl = fulfillment.tracking_url;
+                    shopifyOrderFulfillments.Add(shopifyOrderFulfillment);
+                }
+                shopifyOrder.Fulfillments = shopifyOrderFulfillments;
+            }
+
+            return shopifyOrder;
         }
 
         public static List<ShopifyOrder> ReadShopifyOrders(string shopifyDomain, string shopifyAPIKey, string shopifyAPIPassword, int totalShopifyOrders, string querySuffix)

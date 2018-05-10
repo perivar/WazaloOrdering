@@ -11,10 +11,8 @@ namespace WazaloOrdering.Client.Controllers
 {
     public class OrdersController : Controller
     {
-        // 
         // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06
         [HttpGet]
-
         public IActionResult Index(string dateStart, string dateEnd)
         {
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
@@ -26,13 +24,13 @@ namespace WazaloOrdering.Client.Controllers
 
             var orders = DataFactory.GetShopifyOrders(querySuffix);
             ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            return View("~/Views/Orders/Index.cshtml", orders);
+            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture); 
+            return View(orders);
         }
 
-        [HttpPost("FilterOrders")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult FilterOrders(IFormCollection formCollection)
+        public IActionResult Index(IFormCollection formCollection)
         {
             try
             {
@@ -46,13 +44,16 @@ namespace WazaloOrdering.Client.Controllers
             }
         }
 
-        // 
-        // GET: /Orders/Order/ 
-        public IActionResult Order(string orderId, int numTimes = 1)
+        // GET: /Orders/Order/123134
+        public IActionResult Order(string id)
         {
-            ViewData["Message"] = "OrderId " + orderId;
-            ViewData["NumTimes"] = numTimes;
-            return View();
+            // add field filter
+            string querySuffix = "";
+
+            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+
+            ViewData["id"] = id;
+            return View(order);
         }
 
         private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd) {

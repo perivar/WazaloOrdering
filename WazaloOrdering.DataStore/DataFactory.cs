@@ -22,18 +22,42 @@ namespace WazaloOrdering.DataStore
 
             shopifyOrders = Shopify.ReadShopifyOrders(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, querySuffix);
 
-/*
-            // read and store the product image url
-            foreach (var shopifyOrder in shopifyOrders)
-            {
-                foreach (var shopifyOrderLineItem in shopifyOrder.LineItems)
+            /*
+                // read and store the product image url
+                foreach (var shopifyOrder in shopifyOrders)
                 {
-                    var shopifyProductImages = Shopify.ReadShopifyProductImages(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, shopifyOrderLineItem.ProductId);
-                    shopifyOrderLineItem.ProductImages = shopifyProductImages;
+                    foreach (var shopifyOrderLineItem in shopifyOrder.LineItems)
+                    {
+                        var shopifyProductImages = Shopify.ReadShopifyProductImages(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, shopifyOrderLineItem.ProductId);
+                        shopifyOrderLineItem.ProductImages = shopifyProductImages;
+                    }
                 }
-            }
- */
+             */
             return shopifyOrders;
         }
+
+        public static ShopifyOrder GetShopifyOrder(string orderId, string querySuffix)
+        {
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddUserSecrets<DataFactory>();
+            Configuration = configurationBuilder.Build();
+
+            // get shopify configuration parameters
+            string shopifyDomain = Configuration["ShopifyDomain"];
+            string shopifyAPIKey = Configuration["ShopifyAPIKey"];
+            string shopifyAPIPassword = Configuration["ShopifyAPIPassword"];
+
+            var shopifyOrder = Shopify.ReadShopifyOrder(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, orderId, querySuffix);
+
+            foreach (var shopifyOrderLineItem in shopifyOrder.LineItems)
+            {
+                var shopifyProductImages = Shopify.ReadShopifyProductImages(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, shopifyOrderLineItem.ProductId);
+                shopifyOrderLineItem.ProductImages = shopifyProductImages;
+            }
+
+            return shopifyOrder;
+        }
+
+
     }
 }

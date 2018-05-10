@@ -1,0 +1,71 @@
+@model ShopifyOrder
+@{
+    var order = @Model;
+    var isOrderPage = (bool)ViewData["orderPage"];
+}
+
+<div class="row align-items-center mt-3">
+    <div class="col-md-1">
+        <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a>
+    </div>
+    <div class="col-md-2">
+        @order.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+    </div>
+    <div class="col-md-3">
+        Customer: <span class="text-info">@order.CustomerName</span>
+    </div>
+    <div class="col-md-6">
+        @if(isOrderPage) {
+
+        } else {
+            <a class="btn btn-warning float-right" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">Order Product</a>
+        }        
+    </div>
+</div>
+<div class="row align-items-center">
+    <div class="col-md-2">
+        Financial: @if (order.FinancialStatus.Equals("paid")) {
+        <span class="text-success">@order.FinancialStatus</span> } else {
+        <span class="text-warning">@order.FinancialStatus</span> }
+    </div>
+    <div class="col-md-3">
+        Fulfillment: @if (order.FulfillmentStatus.Equals("fulfilled")) {
+        <span class="text-success">@order.FulfillmentStatus</span> } else {
+        <span class="text-warning">@order.FulfillmentStatus</span> }
+    </div>
+    <div class="col-md-2">
+        Supplier:
+    </div>
+    <div class="col-md-2">
+        Shipped: 0 / 0
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
+        <div class="row align-items-center bg-light text-dark border">
+            <div class="col-md-2">@{ if (lineItem.ProductImages != null) { ShopifyProductImage productImage = lineItem.ProductImages.First();
+                <img width="80" class="img" src="@productImage.Src" alt="@productImage.Alt"> } }
+            </div>
+            <div class="col-md-3"><span class="text-info">@lineItem.Title</span><br><small>SKU: @lineItem.Sku</small></div>
+            <div class="col-md-2">@lineItem.VariantTitle</div>
+            <div class="col-md-2">
+                @if (order.Fulfillments != null) { @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) {
+                <a target="_blank" href="@fulfillment.TrackingUrl">@fulfillment.TrackingNumber</a> } }
+            </div>
+            <div class="col-md-1">
+                <div class="float-right">@lineItem.Quantity</div>
+            </div>
+            <div class="col-md-1"><span class="text-muted float-right"><small>x</small></span></div>
+            <div class="col-md-1">
+                <div class="float-right">@lineItem.Price</div>
+            </div>
+        </div>
+        }
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="float-right"><small>Total Cost: </small>@order.TotalPrice</div>
+    </div>
+</div>
