@@ -62,7 +62,6 @@
             },
             "problemMatcher": "$msCompile"
         },
-        ,
         {
             "label": "npm install (package.json)",
             "command": "npm",
