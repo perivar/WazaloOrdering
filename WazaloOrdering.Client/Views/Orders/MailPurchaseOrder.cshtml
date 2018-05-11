@@ -1,0 +1,13 @@
+@model IEnumerable<PurchaseOrder> 
+@{
+    ViewData["Title"] = "Purchase Order";
+    var orders = @Model;
+}
+
+<h2>Aiminyz - Purchase Order from Wazalo.com</h2>
+<br>
+@if((bool)ViewData["emailSent"]) {
+    <h3>Email sent succesfully to @ViewData["to"]</h3>
+} else {
+    <h3>@ViewData["message"]</h3>    
+}

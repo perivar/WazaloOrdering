@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 namespace WazaloOrdering.DataStore
@@ -96,16 +98,55 @@ namespace WazaloOrdering.DataStore
             }
         }
 
-        public static byte[] WriteCsvToMemory<T>(IEnumerable<T> records)
+        public static byte[] WriteCsvToMemory<T>(IEnumerable<T> records, Type mapType)
         {
             using (var memoryStream = new MemoryStream())
             using (var streamWriter = new StreamWriter(memoryStream))
             using (var csvWriter = new CsvWriter(streamWriter))
             {
-                //csvWriter.Configuration.RegisterClassMap<PersonMap>();
+                csvWriter.Configuration.RegisterClassMap(mapType);
                 csvWriter.WriteRecords(records);
                 streamWriter.Flush();
                 return memoryStream.ToArray();
+            }
+        }
+
+        public static void SendMailWithAttachment(string subject, string body, string to, string cc, string fileDownloadName, byte[] bytes)
+        {
+            var config = new MyConfiguration();
+            var emailSMTPServer = config.GetString("EmailSMTPServer");
+            var emailSMTPPort = config.GetInt("EmailSMTPPort");
+            var emailUserName = config.GetString("EmailUserName");
+            var emailPassword = config.GetString("EmailPassword");
+            var emailDisplayName = config.GetString("EmailDisplayName");
+
+            /* 
+            Note:
+            Google may block sign in attempts from some apps or devices that do not use modern security standards. 
+            Since these apps and devices are easier to break into, blocking them helps keep your account safer.
+            Please make sure, in Gmail settings of your account, enable access for less secure apps to avoid below error:
+            The SMTP server requires a secure connection or the client was not 
+            authenticated. The server response was: 5.5.1 Authentication Required?
+            */
+            using (MailMessage mail = new MailMessage())
+            {
+                mail.From = new MailAddress(emailUserName, emailDisplayName);
+                mail.To.Add(to);
+                if (cc != null) mail.CC.Add(cc);
+
+                mail.Subject = subject;
+                mail.Body = body;
+                mail.Priority = MailPriority.High;
+
+                mail.Attachments.Add(new Attachment(new MemoryStream(bytes), fileDownloadName));
+                mail.IsBodyHtml = true;
+
+                using (SmtpClient smtp = new SmtpClient(emailSMTPServer, emailSMTPPort))
+                {
+                    smtp.Credentials = new NetworkCredential(emailUserName, emailPassword);
+                    smtp.EnableSsl = true;
+                    smtp.Send(mail);
+                }
             }
         }
 

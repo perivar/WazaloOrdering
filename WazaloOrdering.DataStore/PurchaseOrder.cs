@@ -24,7 +24,7 @@ namespace WazaloOrdering.Client.Models
         public string BuyerEmail { get; set; }
     }
 
-    sealed class PurchaseOrderMap : ClassMap<PurchaseOrder>
+    public class PurchaseOrderMap : ClassMap<PurchaseOrder>
     {
         public PurchaseOrderMap()
         {

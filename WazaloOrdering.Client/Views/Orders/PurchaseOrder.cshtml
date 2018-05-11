@@ -52,11 +52,15 @@ Also, always use ePacket for shipment.</p>
 
 <br>
 <br>
-<h2>Step 1. Pay on Paypal to master@aiminyz.com</h2>
+<h1>Step 1. Pay on Paypal to master@aiminyz.com</h1>
 <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
 <br>
 <br>
-<h2>Step 2. Send email with Purchase Order</h2>
+<h1>Step 2. Send email with Purchase Order</h1>
 <br>
-
+@Html.ActionLink("Mail Purchase Order", "MailPurchaseOrder", new { id = ViewData["id"] })
+<br>
+<br>
+<br>
+<br>
 @Html.ActionLink("Export Purchase Order", "ExportPurchaseOrder", new { id = ViewData["id"] })

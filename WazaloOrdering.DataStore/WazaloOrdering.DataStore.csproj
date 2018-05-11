@@ -1,15 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <UserSecretsId>wazalo</UserSecretsId>
+    <UserSecretsId>wazalo-account-services</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="shopifysharp" Version="4.12.0"/>
     <PackageReference Include="CsvHelper" Version="7.1.0"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0"/>
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.2"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.0.2"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.0.2"/>
   </ItemGroup>
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.0"/>
+    <DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="2.0.2"/>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="appsettings.json" CopyToOutputDirectory="Always" />
   </ItemGroup>
 </Project>

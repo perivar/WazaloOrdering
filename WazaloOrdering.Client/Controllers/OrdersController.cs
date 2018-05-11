@@ -7,6 +7,7 @@ using WazaloOrdering.DataStore;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace WazaloOrdering.Client.Controllers
 {
@@ -78,15 +79,70 @@ namespace WazaloOrdering.Client.Controllers
             var order = DataFactory.GetShopifyOrder(id, querySuffix);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
-             // Deserialize model here 
-            var result = Utils.WriteCsvToMemory(purchaseOrders);
+            // Deserialize model here 
+            var result = Utils.WriteCsvToMemory(purchaseOrders, typeof(PurchaseOrderMap));
             var memoryStream = new MemoryStream(result);
             string fileDownloadName = string.Format("wazalo_purchaseorder{0}.csv", order.Name);
             return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
         }
 
-        private List<PurchaseOrder> GetPurchaseOrderFromShopifyOrder(ShopifyOrder order)  {
-            
+        [HttpGet]
+        public IActionResult MailPurchaseOrder(string id)
+        {
+            // add field filter
+            string querySuffix = "";
+            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
+
+            // Deserialize model here 
+            var result = Utils.WriteCsvToMemory(purchaseOrders, typeof(PurchaseOrderMap));
+            var memoryStream = new MemoryStream(result);
+            byte[] bytes = memoryStream.ToArray();
+            memoryStream.Close();
+
+            try
+            {
+                string to = "perivar@nerseth.com";
+                string cc = null;
+
+                // remove all non digit characters from the order id (#2020 => 2020)
+                var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
+                string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
+                
+                string subject = string.Format("Purchase Order {0}", order.Name);
+                string body = @"
+    Hi Aiminyz,<br>
+    Attached is a new purchase order from Wazalo.com.<br>
+    It has already been paid using PayPal.<br>
+    Please confirm this order and send us the tracking number(s) as soon as the order has been processed.<br>
+    <br>
+    <strong>Note!</strong><br>
+    We are dropshipping! Please, don't include any invoices or promo materials into the package.<br>
+    Please also ensure the total shipment value never exceed $40 including shipment cost.<br> 
+    If so, please separate into more shipments. Also, always use ePacket for shipment.<br>
+    If you have any questions, please send an email to shop@wazalo.com<br>
+    <br>
+    Best Regards,<br>
+    Wazalo                          
+                    ";
+                
+                Utils.SendMailWithAttachment(subject, body, to, cc, fileDownloadName, bytes);
+                ViewData["emailSent"] = true;    
+                ViewData["to"] = to;    
+            }
+            catch (System.Exception e)
+            {
+                ViewData["emailSent"] = false;    
+                ViewData["errorMessage"] = e.ToString();    
+            }
+
+            ViewData["id"] = id;
+            return View(purchaseOrders);
+        }
+
+        private List<PurchaseOrder> GetPurchaseOrderFromShopifyOrder(ShopifyOrder order)
+        {
+
             // generate the list of purchase order elements
             var purchaseOrders = new List<PurchaseOrder>();
             foreach (ShopifyOrderLineItem lineItem in order.LineItems)

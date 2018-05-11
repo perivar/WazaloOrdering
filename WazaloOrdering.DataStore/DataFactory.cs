@@ -6,20 +6,15 @@ namespace WazaloOrdering.DataStore
 {
     public class DataFactory
     {
-        static public IConfiguration Configuration { get; set; }
         public static List<ShopifyOrder> GetShopifyOrders(string querySuffix)
         {
-            var shopifyOrders = new List<ShopifyOrder>();
-
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<DataFactory>();
-            Configuration = configurationBuilder.Build();
-
             // get shopify configuration parameters
-            string shopifyDomain = Configuration["ShopifyDomain"];
-            string shopifyAPIKey = Configuration["ShopifyAPIKey"];
-            string shopifyAPIPassword = Configuration["ShopifyAPIPassword"];
+            var config = new MyConfiguration();
+            string shopifyDomain = config.GetString("ShopifyDomain");
+            string shopifyAPIKey = config.GetString("ShopifyAPIKey");
+            string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
 
+            var shopifyOrders = new List<ShopifyOrder>();
             shopifyOrders = Shopify.ReadShopifyOrders(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, querySuffix);
 
             /*
@@ -38,14 +33,11 @@ namespace WazaloOrdering.DataStore
 
         public static ShopifyOrder GetShopifyOrder(string orderId, string querySuffix)
         {
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddUserSecrets<DataFactory>();
-            Configuration = configurationBuilder.Build();
-
             // get shopify configuration parameters
-            string shopifyDomain = Configuration["ShopifyDomain"];
-            string shopifyAPIKey = Configuration["ShopifyAPIKey"];
-            string shopifyAPIPassword = Configuration["ShopifyAPIPassword"];
+            var config = new MyConfiguration();
+            string shopifyDomain = config.GetString("ShopifyDomain");
+            string shopifyAPIKey = config.GetString("ShopifyAPIKey");
+            string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
 
             var shopifyOrder = Shopify.ReadShopifyOrder(shopifyDomain, shopifyAPIKey, shopifyAPIPassword, orderId, querySuffix);
 
@@ -57,7 +49,6 @@ namespace WazaloOrdering.DataStore
 
             return shopifyOrder;
         }
-
 
     }
 }
