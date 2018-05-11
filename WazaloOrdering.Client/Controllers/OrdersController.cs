@@ -82,7 +82,10 @@ namespace WazaloOrdering.Client.Controllers
             // Deserialize model here 
             var result = Utils.WriteCsvToMemory(purchaseOrders, typeof(PurchaseOrderMap));
             var memoryStream = new MemoryStream(result);
-            string fileDownloadName = string.Format("wazalo_purchaseorder{0}.csv", order.Name);
+
+            // remove all non digit characters from the order id (#2020 => 2020)
+            var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
+            string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
             return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
         }
 
@@ -108,7 +111,7 @@ namespace WazaloOrdering.Client.Controllers
                 // remove all non digit characters from the order id (#2020 => 2020)
                 var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
                 string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
-                
+
                 string subject = string.Format("Purchase Order {0}", order.Name);
                 string body = @"
     Hi Aiminyz,<br>
@@ -125,15 +128,15 @@ namespace WazaloOrdering.Client.Controllers
     Best Regards,<br>
     Wazalo                          
                     ";
-                
+
                 Utils.SendMailWithAttachment(subject, body, to, cc, fileDownloadName, bytes);
-                ViewData["emailSent"] = true;    
-                ViewData["to"] = to;    
+                ViewData["emailSent"] = true;
+                ViewData["to"] = to;
             }
             catch (System.Exception e)
             {
-                ViewData["emailSent"] = false;    
-                ViewData["errorMessage"] = e.ToString();    
+                ViewData["emailSent"] = false;
+                ViewData["errorMessage"] = e.ToString();
             }
 
             ViewData["id"] = id;
