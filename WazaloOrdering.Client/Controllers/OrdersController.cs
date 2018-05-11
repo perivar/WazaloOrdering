@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using WazaloOrdering.DataStore;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace WazaloOrdering.Client.Controllers
 {
@@ -24,7 +25,7 @@ namespace WazaloOrdering.Client.Controllers
 
             var orders = DataFactory.GetShopifyOrders(querySuffix);
             ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture); 
+            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             return View(orders);
         }
 
@@ -62,14 +63,69 @@ namespace WazaloOrdering.Client.Controllers
         {
             // add field filter
             string querySuffix = "";
-
             var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
             ViewData["id"] = id;
-            return View(order);
+            return View(purchaseOrders);
         }
 
-        private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd) {
+        [HttpGet]
+        public FileStreamResult ExportPurchaseOrder(string id)
+        {
+            // add field filter
+            string querySuffix = "";
+            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
+
+             // Deserialize model here 
+            var result = Utils.WriteCsvToMemory(purchaseOrders);
+            var memoryStream = new MemoryStream(result);
+            string fileDownloadName = string.Format("wazalo_purchaseorder{0}.csv", order.Name);
+            return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
+        }
+
+        private List<PurchaseOrder> GetPurchaseOrderFromShopifyOrder(ShopifyOrder order)  {
+            
+            // generate the list of purchase order elements
+            var purchaseOrders = new List<PurchaseOrder>();
+            foreach (ShopifyOrderLineItem lineItem in order.LineItems)
+            {
+                var purchaseOrder = new PurchaseOrder();
+                purchaseOrder.OrderID = order.Name;
+                purchaseOrder.SKU = string.Format("{0} ({1})", lineItem.Sku, lineItem.VariantTitle);
+                purchaseOrder.Quantity = lineItem.Quantity;
+
+                // get agreed usd price
+                if (lineItem.Price == 449)
+                {
+                    purchaseOrder.PriceUSD = "18 USD";
+                }
+                else if (lineItem.Price == 199)
+                {
+                    purchaseOrder.PriceUSD = "(Paw Shoes) 9 USD";
+                }
+                else
+                {
+                    // ?
+                }
+
+                purchaseOrder.Name = order.CustomerName;
+                purchaseOrder.Address1 = order.CustomerAddress;
+                purchaseOrder.City = order.CustomerCity;
+                purchaseOrder.Country = order.CustomerCountry;
+                purchaseOrder.ZipCode = order.CustomerZipCode;
+                purchaseOrder.Telephone = "+47 41 31 88 53";
+                purchaseOrder.Remarks = order.Note;
+
+                purchaseOrders.Add(purchaseOrder);
+            }
+
+            return purchaseOrders;
+        }
+
+        private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd)
+        {
             var date = new Date();
 
             DateTime from = date.CurrentDate.AddDays(-14);
@@ -102,8 +158,10 @@ namespace WazaloOrdering.Client.Controllers
                 catch (System.Exception)
                 {
                 }
-            }        
-            return new Tuple<DateTime, DateTime>(from, to);    
+            }
+            return new Tuple<DateTime, DateTime>(from, to);
         }
+
+
     }
 }

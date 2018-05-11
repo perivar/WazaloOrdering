@@ -1,50 +1,42 @@
-@model ShopifyOrder
+@model IEnumerable<PurchaseOrder> 
 @{
-    ViewData["Title"] = "Purchase Order" + @Model.Name;
-    var order = @Model as ShopifyOrder; 
+    ViewData["Title"] = "Purchase Order";
+    var orders = @Model;
 }
 
-<h3 style="margin: 0 0 1em 0;">Purchase Order from WAZALO.COM</h3>
+<h2>Aiminyz - Purchase Order from Wazalo.com</h2>
+<br>
 
-<table class="table-tabular" style="margin: 0 0 1em 0;">
-  <thead>
+<table class="table table-bordered table-hover table-sm">
+  <thead class="thead-light">
       <tr>
-        <th>Order ID</th>
-        <th>SKU</th>
-        <th>Quantity</th>
-        <th>Price (USD)</th>
-        <th>Name</th>
-        <th>Address 1</th>
-        <th>Zip Code</th>
-        <th>City</th>
-        <th>Country</th>
-        <th>Telephone</th>
-        <th>Remarks</th>
+        <th scope="col">Order ID</th>
+        <th scope="col">SKU</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Price (USD)</th>
+        <th scope="col">Name</th>
+        <th scope="col">Address 1</th>
+        <th scope="col">City</th>
+        <th scope="col">Country</th>
+        <th scope="col">Zip Code</th>
+        <th scope="col">Telephone</th>
+        <th scope="col">Remarks</th>
       </tr>
   </thead>
   <tbody>
-    @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
+    @foreach(PurchaseOrder order in orders) {
         <tr>
+            <td>@order.OrderID</td>
+            <td>@order.SKU</td>
+            <td>@order.Quantity</td>
+            <td>@order.PriceUSD</td>
             <td>@order.Name</td>
-            <td>@lineItem.Sku<br />(@lineItem.VariantTitle)
-            </td>
-            <td>@lineItem.Quantity</td>
-            <td>      
-            @if(lineItem.Price == 449) {
-                <div>18 USD</div>
-            } else if(lineItem.Price == 199) {
-                <div>Paw Shoes: 9 USD</div>
-            } else {
-                <div>?</div>
-            }
-            </td>
-            <td>@order.CustomerName</td>
-            <td>@order.CustomerAddress</td>
-            <td>@order.CustomerZipCode</td>
-            <td>@order.CustomerCity</td>
-            <td>@order.CustomerCountry</td>
-            <td>+47 41 31 88 53</td>
-            <td>@order.Note</td>
+            <td>@order.Address1</td>
+            <td>@order.City</td>
+            <td>@order.Country</td>
+            <td>@order.ZipCode</td>
+            <td>@order.Telephone</td>
+            <td>@order.Remarks</td>
         </tr>
         }
   </tbody>
@@ -57,3 +49,14 @@ Please also ensure the total shipment value never exceed $40 including shipment 
 If so, please separate into more shipments.
 Also, always use ePacket for shipment.</p>
 <p>If you have any questions, please send an email to <u><a href="mailto:shop@wazalo.com">shop@wazalo.com</a></u></p>
+
+<br>
+<br>
+<h2>Step 1. Pay on Paypal to master@aiminyz.com</h2>
+<a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
+<br>
+<br>
+<h2>Step 2. Send email with Purchase Order</h2>
+<br>
+
+@Html.ActionLink("Export Purchase Order", "ExportPurchaseOrder", new { id = ViewData["id"] })

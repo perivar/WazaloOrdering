@@ -96,6 +96,19 @@ namespace WazaloOrdering.DataStore
             }
         }
 
+        public static byte[] WriteCsvToMemory<T>(IEnumerable<T> records)
+        {
+            using (var memoryStream = new MemoryStream())
+            using (var streamWriter = new StreamWriter(memoryStream))
+            using (var csvWriter = new CsvWriter(streamWriter))
+            {
+                //csvWriter.Configuration.RegisterClassMap<PersonMap>();
+                csvWriter.WriteRecords(records);
+                streamWriter.Flush();
+                return memoryStream.ToArray();
+            }
+        }
+
         /// <summary>
         /// Gets the 12:00:00 instance of a DateTime
         /// </summary>
