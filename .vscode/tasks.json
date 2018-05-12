@@ -63,10 +63,47 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "npm install (package.json)",
+            "label": "npm install local packages (package.json)",
             "command": "npm",
             "args": [
                 "install"
+            ],
+            "type": "shell",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/WazaloOrdering.Client"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "npm list installed local packages",
+            "command": "npm",
+            "args": [
+                "list",
+                "--depth=0"
+            ],
+            "type": "shell",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new",
+                "focus": true
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/WazaloOrdering.Client"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "npm upgrade npm global",
+            "command": "npm",
+            "args": [
+                "install",
+                "-g",
+                "npm@latest"
             ],
             "type": "shell",
             "presentation": {
