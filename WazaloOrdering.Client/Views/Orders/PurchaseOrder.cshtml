@@ -52,15 +52,15 @@ Also, always use ePacket for shipment.</p>
 
 <br>
 <br>
-<h1>Step 1. Pay on Paypal to master@aiminyz.com</h1>
+<h1>Step 1. Pay on Paypal</h1>
+<h2>Send Money to master@aiminyz.com</h2>
 <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
 <br>
 <br>
-<h1>Step 2. Send email with Purchase Order</h1>
-<br>
-@Html.ActionLink("Mail Purchase Order", "MailPurchaseOrder", new { id = ViewData["id"] })
-<br>
+<h1>Step 2. Send Email with Purchase Order</h1>
+<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
 <br>
 <br>
 <br>
-@Html.ActionLink("Export Purchase Order", "ExportPurchaseOrder", new { id = ViewData["id"] })
+<br>
+<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a>

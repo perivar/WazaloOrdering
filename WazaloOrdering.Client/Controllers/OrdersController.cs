@@ -145,7 +145,6 @@ namespace WazaloOrdering.Client.Controllers
 
         private List<PurchaseOrder> GetPurchaseOrderFromShopifyOrder(ShopifyOrder order)
         {
-
             // generate the list of purchase order elements
             var purchaseOrders = new List<PurchaseOrder>();
             foreach (ShopifyOrderLineItem lineItem in order.LineItems)
@@ -156,26 +155,16 @@ namespace WazaloOrdering.Client.Controllers
                 purchaseOrder.Quantity = lineItem.Quantity;
 
                 // get agreed usd price
-                if (lineItem.Price == 449)
-                {
-                    purchaseOrder.PriceUSD = "18 USD";
-                }
-                else if (lineItem.Price == 199)
-                {
-                    purchaseOrder.PriceUSD = "(Paw Shoes) 9 USD";
-                }
-                else
-                {
-                    // ?
-                }
+                var priceUSD = GetLineItemAgreedPriceUSD(lineItem);
+                purchaseOrder.PriceUSD = string.Format(new CultureInfo("en-US", false), "{0:C}", priceUSD);
 
-                purchaseOrder.Name = order.CustomerName;
-                purchaseOrder.Address1 = order.CustomerAddress;
-                purchaseOrder.City = order.CustomerCity;
-                purchaseOrder.Country = order.CustomerCountry;
+                purchaseOrder.Name = Utils.GetNormalizedEquivalentPhrase(order.CustomerName);
+                purchaseOrder.Address1 = Utils.GetNormalizedEquivalentPhrase(order.CustomerAddress);
+                purchaseOrder.City = Utils.GetNormalizedEquivalentPhrase(order.CustomerCity);
+                purchaseOrder.Country = Utils.GetNormalizedEquivalentPhrase(order.CustomerCountry);
                 purchaseOrder.ZipCode = order.CustomerZipCode;
                 purchaseOrder.Telephone = "+47 41 31 88 53";
-                purchaseOrder.Remarks = order.Note;
+                purchaseOrder.Remarks = Utils.GetNormalizedEquivalentPhrase(order.Note);
 
                 purchaseOrders.Add(purchaseOrder);
             }
@@ -183,6 +172,43 @@ namespace WazaloOrdering.Client.Controllers
             return purchaseOrders;
         }
 
+        private static decimal GetLineItemAgreedPriceUSD(ShopifyOrderLineItem lineItem)
+        {
+            Regex sizeRegEx = new Regex(@"(\d+)-(\d+)");
+            if (lineItem.Price == 449)
+            {
+                // either child or parent 
+                // extract size from text like "115-125 cm" to find what price to use
+                string size = "";
+                Match match = sizeRegEx.Match(lineItem.VariantTitle);
+                if (match.Success)
+                {
+                    size = string.Format("{0}-{1}", match.Groups[1].Value, match.Groups[2].Value);
+                    switch (size)
+                    {
+                        case "95-105":
+                        case "105-115":
+                        case "115-125":
+                        case "125-135":
+                        case "135-145":
+                            return 9;
+                        default:
+                            return 18;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("ERROR: Could not get pajama size!");
+                }
+                return 18;
+            }
+            else if (lineItem.Price == 199)
+            {
+                // shoes
+                return 9;
+            }
+            return 0;
+        }
         private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd)
         {
             var date = new Date();
@@ -220,7 +246,5 @@ namespace WazaloOrdering.Client.Controllers
             }
             return new Tuple<DateTime, DateTime>(from, to);
         }
-
-
     }
 }

@@ -6,7 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
 using System.Text.RegularExpressions;
+using Unidecode.NET;
 
 namespace WazaloOrdering.DataStore
 {
@@ -148,6 +150,11 @@ namespace WazaloOrdering.DataStore
                     smtp.Send(mail);
                 }
             }
+        }
+
+        public static string GetNormalizedEquivalentPhrase(string phrase)
+        {   
+            return phrase.Unidecode();
         }
 
         /// <summary>
