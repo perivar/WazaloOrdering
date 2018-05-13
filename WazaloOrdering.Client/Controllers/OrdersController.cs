@@ -8,12 +8,14 @@ using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WazaloOrdering.Client.Controllers
 {
     public class OrdersController : Controller
     {
         // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06
+        [Authorize]
         [HttpGet]
         public IActionResult Index(string dateStart, string dateEnd)
         {
@@ -30,6 +32,7 @@ namespace WazaloOrdering.Client.Controllers
             return View(orders);
         }
 
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Index(IFormCollection formCollection)
@@ -48,6 +51,8 @@ namespace WazaloOrdering.Client.Controllers
         }
 
         // GET: /Orders/Order/123134
+        [Authorize]
+        [HttpGet]
         public IActionResult Order(string id)
         {
             // add field filter
@@ -60,6 +65,8 @@ namespace WazaloOrdering.Client.Controllers
         }
 
         // GET: /Orders/PurchaseOrder/123134
+        [Authorize]
+        [HttpGet]
         public IActionResult PurchaseOrder(string id)
         {
             // add field filter
@@ -71,6 +78,7 @@ namespace WazaloOrdering.Client.Controllers
             return View(purchaseOrders);
         }
 
+        [Authorize]
         [HttpGet]
         public FileStreamResult ExportPurchaseOrder(string id)
         {
@@ -89,6 +97,7 @@ namespace WazaloOrdering.Client.Controllers
             return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
         }
 
+        [Authorize]
         [HttpGet]
         public IActionResult MailPurchaseOrder(string id)
         {

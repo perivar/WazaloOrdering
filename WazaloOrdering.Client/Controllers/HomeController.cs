@@ -44,9 +44,14 @@ namespace WazaloOrdering.Client.Controllers
         [AllowAnonymous, HttpPost]
         public IActionResult Login(LoginData loginData)
         {
+            // get shopify configuration parameters
+            var config = new MyConfiguration();
+            string username = config.GetString("OberloUsername");
+            string password = config.GetString("OberloPassword");
+
             if (ModelState.IsValid)
             {
-                var isValid = (loginData.Username == "username" && loginData.Password == "password");
+                var isValid = (loginData.Username == username && loginData.Password == password);
                 if (!isValid)
                 {
                     ModelState.AddModelError("", "Login failed. Please check Username and/or password");
@@ -59,7 +64,7 @@ namespace WazaloOrdering.Client.Controllers
                     identity.AddClaim(new Claim(ClaimTypes.Name, loginData.Username));
                     var principal = new ClaimsPrincipal(identity);
                     HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
-                    return Redirect("~/Home/Index");
+                    return Redirect("~/Orders");
                 }
             }
             else
