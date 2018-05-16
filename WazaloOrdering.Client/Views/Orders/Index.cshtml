@@ -25,18 +25,12 @@
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input name="dateStart" type="text" class="date-from form-control py-2 border-right-0 border" value="@ViewData["dateStart"]">
-                    <div class="input-group-append input-group-addon">
-                        <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
-                    </div>
+                    <input name="dateStart" type="text" class="date-from form-control" value="@ViewData["dateStart"]">
                 </div>
             </div>
             <div class="col-md-2">
                 <div class="input-group date">
-                    <input name="dateEnd" type="text" class="date-to form-control py-2 border-right-0 border" value="@ViewData["dateEnd"]">
-                    <div class="input-group-append input-group-addon">
-                        <span class="input-group-text bg-transparent"><i class="far fa-calendar-alt"></i></span>
-                    </div>
+                    <input name="dateEnd" type="text" class="date-to form-control" value="@ViewData["dateEnd"]">
                 </div>
             </div>
             <div class="col-md-2">
@@ -85,23 +79,26 @@
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
             $dateFromPicker.datepicker({
+                uiLibrary: 'bootstrap4', 
+                iconsLibrary: 'fontawesome',
                 format: "yyyy-mm-dd",
-                language: "no",
-                autoclose: true
+                locale: "en-us",
+                weekStartDay: 1
             })
-            .on('changeDate', function(e) {
+            .on('close', function(e) {
                 window.location.href = "@Url.Action("", "Orders")" 
                 + "?dateStart=" + $dateFromPicker.val()
                 + "&dateEnd=" + $dateToPicker.val();
             });
 
             $dateToPicker.datepicker({
+                uiLibrary: 'bootstrap4', 
+                iconsLibrary: 'fontawesome',
                 format: "yyyy-mm-dd",
-                language: "no",
-                autoclose: true,
-                todayBtn: true
+                locale: "en-us",
+                weekStartDay: 1
             })
-            .on('changeDate', function(e) {
+            .on('close', function(e) {
                 window.location.href = "@Url.Action("", "Orders")" 
                 + "?dateStart=" + $dateFromPicker.val()
                 + "&dateEnd=" + $dateToPicker.val();
@@ -153,14 +150,9 @@
                     break;
                 }     
 
-                $dateFromPicker.datepicker('setDate', dateFrom);
-                $dateToPicker.datepicker('setDate', dateTo);                
+                $dateFromPicker.datepicker('value', dateFrom);
+                $dateToPicker.datepicker('value', dateTo);                
             });    
-
-            $(".clickable-rowDISABLED").click(function(e) {
-                e.preventDefault(); // cancel the link behaviour
-                window.location.href = $(this).data("href");
-            });  
 
         });
 

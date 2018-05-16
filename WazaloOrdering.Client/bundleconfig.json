@@ -20,10 +20,12 @@
     "outputFileName": "wwwroot/vendor.min.css",
     "inputFiles": [
       "node_modules/bootstrap/dist/css/bootstrap.min.css",
-      "node_modules/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css"
+      "node_modules/gijgo/css/gijgo.min.css"
     ],
     "minify": {
-      "enabled": false
+      "enabled": true,
+      "renameLocals": true,
+      "adjustRelativePaths": false
     }
   },
   {
@@ -32,11 +34,32 @@
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/popper.js/dist/umd/popper.min.js",
       "node_modules/bootstrap/dist/js/bootstrap.min.js",
-      "node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js",
-      "node_modules/bootstrap-datepicker/dist/locales/bootstrap-datepicker.no.min.js"
+      "node_modules/gijgo/js/gijgo.min.js"
     ],
     "minify": {
-      "enabled": false
+      "enabled": true,
+      "renameLocals": true,
+      "adjustRelativePaths": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/fonts/gijgo-material.ttf",
+    "inputFiles": [
+      "node_modules/gijgo/fonts/gijgo-material.ttf"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/fonts/gijgo-material.woff",
+    "inputFiles": [
+      "node_modules/gijgo/fonts/gijgo-material.woff"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
     }
   }
 ]
