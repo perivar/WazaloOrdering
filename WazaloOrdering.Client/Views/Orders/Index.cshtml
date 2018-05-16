@@ -14,22 +14,22 @@
         </div>
 
         <form id="filterOrdersForm" asp-controller="Orders" asp-action="" method="post">
-        <div class="row align-items-center mt-3">
+        <div class="row align-items-center mt-2">
             <div class="col-md-6">
                 <div class="input-group">
-                    <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..."> 
+                    <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..." value="@ViewData["filter"]"> 
                     <div class="input-group-append">
                         <button class="btn btn-info" type="submit">Filter</button>
                     </div>                                  
                 </div>
             </div>
             <div class="col-md-2">
-                <div class="input-group date">
+                <div class="input-group date py-2">
                     <input name="dateStart" type="text" class="date-from form-control" value="@ViewData["dateStart"]">
                 </div>
             </div>
             <div class="col-md-2">
-                <div class="input-group date">
+                <div class="input-group date py-2">
                     <input name="dateEnd" type="text" class="date-to form-control" value="@ViewData["dateEnd"]">
                 </div>
             </div>
@@ -151,7 +151,8 @@
                 }     
 
                 $dateFromPicker.datepicker('value', dateFrom);
-                $dateToPicker.datepicker('value', dateTo);                
+                $dateToPicker.datepicker('value', dateTo);        
+                $dateFromPicker.close();
             });    
 
         });

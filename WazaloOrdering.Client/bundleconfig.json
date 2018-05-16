@@ -17,19 +17,19 @@
     "sourceMap": false
   },
   {
-    "outputFileName": "wwwroot/vendor.min.css",
+    "outputFileName": "wwwroot/css/vendor.min.css",
     "inputFiles": [
       "node_modules/bootstrap/dist/css/bootstrap.min.css",
       "node_modules/gijgo/css/gijgo.min.css"
     ],
     "minify": {
-      "enabled": true,
-      "renameLocals": true,
+      "enabled": false,
+      "renameLocals": false,
       "adjustRelativePaths": false
     }
   },
   {
-    "outputFileName": "wwwroot/vendor.min.js",
+    "outputFileName": "wwwroot/js/vendor.min.js",
     "inputFiles": [
       "node_modules/jquery/dist/jquery.min.js",
       "node_modules/popper.js/dist/umd/popper.min.js",
@@ -37,8 +37,8 @@
       "node_modules/gijgo/js/gijgo.min.js"
     ],
     "minify": {
-      "enabled": true,
-      "renameLocals": true,
+      "enabled": false,
+      "renameLocals": false,
       "adjustRelativePaths": false
     }
   },
@@ -56,6 +56,26 @@
     "outputFileName": "wwwroot/fonts/gijgo-material.woff",
     "inputFiles": [
       "node_modules/gijgo/fonts/gijgo-material.woff"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/fonts/gijgo-material.eot",
+    "inputFiles": [
+      "node_modules/gijgo/fonts/gijgo-material.eot"
+    ],
+    "minify": {
+      "enabled": false,
+      "renameLocals": false
+    }
+  },
+  {
+    "outputFileName": "wwwroot/fonts/gijgo-material.svg",
+    "inputFiles": [
+      "node_modules/gijgo/fonts/gijgo-material.svg"
     ],
     "minify": {
       "enabled": false,

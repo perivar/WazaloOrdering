@@ -14,10 +14,10 @@ namespace WazaloOrdering.Client.Controllers
 {
     public class OrdersController : Controller
     {
-        // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06
+        // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06[&filter=abcd]
         [Authorize]
         [HttpGet]
-        public IActionResult Index(string dateStart, string dateEnd)
+        public IActionResult Index(string dateStart, string dateEnd, string filter = null)
         {
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
             DateTime from = fromto.Item1;
@@ -29,6 +29,7 @@ namespace WazaloOrdering.Client.Controllers
             var orders = DataFactory.GetShopifyOrders(querySuffix);
             ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            ViewData["filter"] = filter;
             return View(orders);
         }
 
@@ -42,7 +43,7 @@ namespace WazaloOrdering.Client.Controllers
                 string filter = HttpContext.Request.Form["filter"];
                 string dateStart = HttpContext.Request.Form["dateStart"];
                 string dateEnd = HttpContext.Request.Form["dateEnd"];
-                return Index(dateStart, dateEnd);
+                return Index(dateStart, dateEnd, filter);
             }
             catch
             {
