@@ -1,7 +1,5 @@
-@model IEnumerable<ShopifyOrder> 
-@{ 
-    ViewData["Title"] = "Orders"; 
-} 
+@model IEnumerable<ShopifyOrder>
+@{ ViewData["Title"] = "Orders"; }
 
     <div class="container">
         <div class="row align-items-center mt-3">
@@ -14,97 +12,106 @@
         </div>
 
         <form id="filterOrdersForm" asp-controller="Orders" asp-action="" method="post">
-        <div class="row align-items-center mt-2">
-            <div class="col-md-6">
-                <div class="input-group">
-                    <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..." value="@ViewData["filter"]"> 
-                    <div class="input-group-append">
-                        <button class="btn btn-info" type="submit">Filter</button>
-                    </div>                                  
+            <div class="row align-items-center mt-2">
+                <div class="col-md-2">
+                    <div class="dropdown">
+                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        To Order
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuStatus">
+                            <li><a href="#" class="dropdown-item" data-value="to_order" tabIndex="-1"><input type="checkbox" name="to_order" class="form-check-input" />To Order</a></li>
+                            <li><a href="#" class="dropdown-item" data-value="order_placed" tabIndex="-1"><input type="checkbox" name="order_placed" class="form-check-input" />Order Placed</a></li>
+                            <li><a href="#" class="dropdown-item" data-value="in_processing" tabIndex="-1"><input type="checkbox" class="form-check-input"/>In Processing</a></li>
+                            <li><a href="#" class="dropdown-item" data-value="shipped" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Shipped</a></li>
+                            <li><a href="#" class="dropdown-item" data-value="partially_shipped" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Partially Shipped</a></li>
+                            <li><a href="#" class="dropdown-item" data-value="cancelled" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Cancelled</a></li>
+                        </ul>
+                    </div>
+                </div>                
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..." value="@ViewData["filter"]">
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="submit">Filter</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <div class="input-group date py-2">
-                    <input name="dateStart" type="text" class="date-from form-control" value="@ViewData["dateStart"]">
+                <div class="col-md-2">
+                    <div class="input-group date py-2">
+                        <input name="dateStart" type="text" class="date-from form-control" value="@ViewData["dateStart"]">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <div class="input-group date py-2">
-                    <input name="dateEnd" type="text" class="date-to form-control" value="@ViewData["dateEnd"]">
+                <div class="col-md-2">
+                    <div class="input-group date py-2">
+                        <input name="dateEnd" type="text" class="date-to form-control" value="@ViewData["dateEnd"]">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-2">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle float-right" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <div class="col-md-2">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle float-right" type="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Select Date Range
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <button class="dropdown-item" type="button" value="today">Today</button>
-                        <button class="dropdown-item" type="button" value="yesterday">Yesterday</button>
-                        <button class="dropdown-item" type="button" value="last_7">Last 7 days</button>
-                        <button class="dropdown-item" type="button" value="last_14">Last 14 days</button>
-                        <button class="dropdown-item" type="button" value="last_30">Last 30 days</button>
-                        <button class="dropdown-item" type="button" value="last_90">Last 90 days</button>
-                        <button class="dropdown-item" type="button" value="week_to_date">Week to date</button>
-                        <button class="dropdown-item" type="button" value="month_to_date">Month to date</button>
-                        <button class="dropdown-item" type="button" value="quarter_to_date">Quarter to date</button>
-                        <button class="dropdown-item" type="button" value="year_to_date">Year to date</button>
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <button class="dropdown-item" type="button" value="today">Today</button>
+                            <button class="dropdown-item" type="button" value="yesterday">Yesterday</button>
+                            <button class="dropdown-item" type="button" value="last_7">Last 7 days</button>
+                            <button class="dropdown-item" type="button" value="last_14">Last 14 days</button>
+                            <button class="dropdown-item" type="button" value="last_30">Last 30 days</button>
+                            <button class="dropdown-item" type="button" value="last_90">Last 90 days</button>
+                            <button class="dropdown-item" type="button" value="week_to_date">Week to date</button>
+                            <button class="dropdown-item" type="button" value="month_to_date">Month to date</button>
+                            <button class="dropdown-item" type="button" value="quarter_to_date">Quarter to date</button>
+                            <button class="dropdown-item" type="button" value="year_to_date">Year to date</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
         </form>
 
-        @foreach(ShopifyOrder order in Model) {
-            @await Html.PartialAsync(
-                "OrderPartial",
-                order,
-                new ViewDataDictionary(this.ViewData) {
-                    { "orderPage", false }
-                }
-            )
-        }
+        @foreach(ShopifyOrder order in Model) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
     </div>
 
-@section Scripts {
-    @* Check also
-    // https://github.com/MauriceZ/lannister/blob/9dfa9c19e6ecd120db240be6ccb419a0212169ec/app/assets/javascripts/dashboard.js
-    // https://github.com/MauriceZ/lannister/blob/5befba458a14904599feb5d456619651791f02ce/app/views/dashboard/index.html.erb
+    @section Scripts { @* Check also // https://github.com/MauriceZ/lannister/blob/9dfa9c19e6ecd120db240be6ccb419a0212169ec/app/assets/javascripts/dashboard.js // https://github.com/MauriceZ/lannister/blob/5befba458a14904599feb5d456619651791f02ce/app/views/dashboard/index.html.erb
     *@
     <script type="text/javascript">
         $(function() { // will trigger when the document is ready
             var $dateFromPicker = $('.date-from');
-            var $dateToPicker = $('.date-to');      
-            
+            var $dateToPicker = $('.date-to');
+
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
             $dateFromPicker.datepicker({
-                uiLibrary: 'bootstrap4', 
-                iconsLibrary: 'fontawesome',
-                format: "yyyy-mm-dd",
-                locale: "en-us",
-                weekStartDay: 1
-            })
-            .on('close', function(e) {
-                window.location.href = "@Url.Action("", "Orders")" 
-                + "?dateStart=" + $dateFromPicker.val()
-                + "&dateEnd=" + $dateToPicker.val();
-            });
+                    uiLibrary: 'bootstrap4',
+                    iconsLibrary: 'fontawesome',
+                    format: "yyyy-mm-dd",
+                    locale: "en-us",
+                    weekStartDay: 1
+                })
+                .on('close', function(e) {
+                    window.location.href = "@Url.Action("", "Orders")" +
+                        "?dateStart=" + $dateFromPicker.val() +
+                        "&dateEnd=" + $dateToPicker.val();
+                });
 
             $dateToPicker.datepicker({
-                uiLibrary: 'bootstrap4', 
-                iconsLibrary: 'fontawesome',
-                format: "yyyy-mm-dd",
-                locale: "en-us",
-                weekStartDay: 1
-            })
-            .on('close', function(e) {
-                window.location.href = "@Url.Action("", "Orders")" 
-                + "?dateStart=" + $dateFromPicker.val()
-                + "&dateEnd=" + $dateToPicker.val();
+                    uiLibrary: 'bootstrap4',
+                    iconsLibrary: 'fontawesome',
+                    format: "yyyy-mm-dd",
+                    locale: "en-us",
+                    weekStartDay: 1
+                })
+                .on('close', function(e) {
+                    window.location.href = "@Url.Action("", "Orders")" +
+                        "?dateStart=" + $dateFromPicker.val() +
+                        "&dateEnd=" + $dateToPicker.val();
+                });
+
+            $(".dropdown-menu li a").click(function(){
+                var selText = $(this).text();
+                $(this).parents('.dropdown').find('.dropdown-toggle').html(selText);
             });
 
-            $(".dropdown-item").click(function(e){
+            $(".dropdown-item").click(function(e) {
                 //e.preventDefault(); // cancel the link behaviour
 
                 var dateRange = $(this).val();
@@ -113,47 +120,47 @@
                 var dateTo = new Date();
 
                 switch (dateRange) {
-                case 'today':
-                    break;
-                case 'yesterday':
-                    dateFrom = new Date(today.getTime() - daysToMillis(1));
-                    dateTo = dateFrom;
-                    break;
-                case 'last_7':
-                    dateFrom = new Date(today.getTime() - daysToMillis(7));
-                    break;
-                case 'last_14':
-                    dateFrom = new Date(today.getTime() - daysToMillis(14));
-                    break;
-                case 'last_30':
-                    dateFrom = new Date(today.getTime() - daysToMillis(30));
-                    break;
-                case 'last_90':
-                    dateFrom = new Date(today.getTime() - daysToMillis(90));
-                    break;
-                case 'week_to_date':
-                    dateFrom = new Date(today.getTime() - daysToMillis(today.getDay()));
-                    break;
-                case 'month_to_date':
-                    dateFrom.setDate(1);
-                    break;
-                case 'quarter_to_date':
-                    dateFrom.setMonth((Math.floor((today.getMonth() + 3) / 3) - 1) * 3);
-                    dateFrom.setDate(1);
-                    break;
-                case 'year_to_date':
-                    dateFrom.setMonth(0);
-                    dateFrom.setDate(1);
-                    break;
-                default:
-                    return;
-                    break;
-                }     
+                    case 'today':
+                        break;
+                    case 'yesterday':
+                        dateFrom = new Date(today.getTime() - daysToMillis(1));
+                        dateTo = dateFrom;
+                        break;
+                    case 'last_7':
+                        dateFrom = new Date(today.getTime() - daysToMillis(7));
+                        break;
+                    case 'last_14':
+                        dateFrom = new Date(today.getTime() - daysToMillis(14));
+                        break;
+                    case 'last_30':
+                        dateFrom = new Date(today.getTime() - daysToMillis(30));
+                        break;
+                    case 'last_90':
+                        dateFrom = new Date(today.getTime() - daysToMillis(90));
+                        break;
+                    case 'week_to_date':
+                        dateFrom = new Date(today.getTime() - daysToMillis(today.getDay()));
+                        break;
+                    case 'month_to_date':
+                        dateFrom.setDate(1);
+                        break;
+                    case 'quarter_to_date':
+                        dateFrom.setMonth((Math.floor((today.getMonth() + 3) / 3) - 1) * 3);
+                        dateFrom.setDate(1);
+                        break;
+                    case 'year_to_date':
+                        dateFrom.setMonth(0);
+                        dateFrom.setDate(1);
+                        break;
+                    default:
+                        return;
+                        break;
+                }
 
                 $dateFromPicker.datepicker('value', dateFrom);
-                $dateToPicker.datepicker('value', dateTo);        
+                $dateToPicker.datepicker('value', dateTo);
                 $dateFromPicker.close();
-            });    
+            });
 
         });
 
@@ -161,4 +168,4 @@
             return numDays * 86400000; // 86400000 ms in a day
         }
     </script>
-}
+    }
