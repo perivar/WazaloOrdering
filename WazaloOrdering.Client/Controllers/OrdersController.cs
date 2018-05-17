@@ -9,46 +9,68 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using System.Linq;
 
 namespace WazaloOrdering.Client.Controllers
 {
     public class OrdersController : Controller
     {
-        // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06[&filter=abcd]
+        // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06[&filter=abcd][&statusIds=2,3]
         [Authorize]
         [HttpGet]
-        public IActionResult Index(string dateStart, string dateEnd, string filter = null)
+        public IActionResult Index(string dateStart, string dateEnd, string filter = null, int[] statusIds = null)
         {
+            var model = new OrdersViewModel();
+
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
-            DateTime from = fromto.Item1;
-            DateTime to = Utils.AbsoluteEnd(fromto.Item2);
+            model.DateStart = fromto.Item1;
+            model.DateEnd = Utils.AbsoluteEnd(fromto.Item2);
+            model.Filter = filter;
+
+            model.StatusList = GetOrderStatusList();
+
+            if (statusIds == null || statusIds.Count() == 0) {
+                model.StatusIds = new int[] { 1 }; // to order    
+            } else {
+                model.StatusIds = statusIds;
+            }            
 
             // add date filter, created_at_min and created_at_max
-            string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", from, to);
+            string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", model.DateStart, model.DateEnd);
 
             var orders = DataFactory.GetShopifyOrders(querySuffix);
-            ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["filter"] = filter;
-            return View(orders);
+            model.ShopifyOrders = orders;
+
+            return View(model);
         }
 
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Index(IFormCollection formCollection)
+        public IActionResult Index(OrdersViewModel model)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                string filter = HttpContext.Request.Form["filter"];
-                string dateStart = HttpContext.Request.Form["dateStart"];
-                string dateEnd = HttpContext.Request.Form["dateEnd"];
-                return Index(dateStart, dateEnd, filter);
+                // Something wasn't valid on the model
+                var message = string.Join(" | ", ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage));
+                        Console.WriteLine("ERROR: " + message);
+                return View(model);
             }
-            catch
-            {
-                return Index(null, null);
-            }
+
+            // The model passed validation, do something with it
+            
+            //var json = JsonConvert.SerializeObject(model);
+            //return Content(json);
+
+            return RedirectToAction("Index", new { 
+                DateStart = model.DateStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),                
+                DateEnd = model.DateEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
+                Filter = model.Filter,
+                StatusIds = model.StatusIds });
         }
 
         // GET: /Orders/Order/123134
@@ -219,6 +241,20 @@ namespace WazaloOrdering.Client.Controllers
             }
             return 0;
         }
+
+        private List<SelectListItem> GetOrderStatusList() {
+            var statusList = new List<SelectListItem>() {
+                new SelectListItem() { Text = "To Order", Value = "1" },
+                new SelectListItem() { Text = "Order Placed", Value = "2" },
+                new SelectListItem() { Text = "In Processing", Value = "3" },
+                new SelectListItem() { Text = "Shipped", Value = "4" },
+                new SelectListItem() { Text = "Partially Shipped", Value = "5" },
+                new SelectListItem() { Text = "Cancelled", Value = "6" }
+            };
+
+            return statusList;
+        } 
+
         private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd)
         {
             var date = new Date();

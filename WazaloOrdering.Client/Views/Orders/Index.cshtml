@@ -1,36 +1,26 @@
-@model IEnumerable<ShopifyOrder>
+@model OrdersViewModel
 @{ ViewData["Title"] = "Orders"; }
 
     <div class="container">
         <div class="row align-items-center mt-3">
             <div class="col-md-10">
-                <h3>Your orders for @ViewData["dateStart"] - @ViewData["dateEnd"]</h3>
+                <h3>Your orders for @Html.DisplayFor(x => x.DateStart) - @Html.DisplayFor(x => x.DateEnd)</h3>
             </div>
             <div class="col-md-2">
                 <button class="btn btn-primary float-right">Get All Tracking Codes</button>
             </div>
         </div>
 
-        <form id="filterOrdersForm" asp-controller="Orders" asp-action="" method="post">
+        <form asp-controller="Orders" asp-action="" method="post">
             <div class="row align-items-center mt-2">
-                <div class="col-md-2">
-                    <div class="dropdown">
-                        <button class="btn btn-success dropdown-toggle" type="button" id="dropdownMenuStatus" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        To Order
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuStatus">
-                            <li><a href="#" class="dropdown-item" data-value="to_order" tabIndex="-1"><input type="checkbox" name="to_order" class="form-check-input" />To Order</a></li>
-                            <li><a href="#" class="dropdown-item" data-value="order_placed" tabIndex="-1"><input type="checkbox" name="order_placed" class="form-check-input" />Order Placed</a></li>
-                            <li><a href="#" class="dropdown-item" data-value="in_processing" tabIndex="-1"><input type="checkbox" class="form-check-input"/>In Processing</a></li>
-                            <li><a href="#" class="dropdown-item" data-value="shipped" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Shipped</a></li>
-                            <li><a href="#" class="dropdown-item" data-value="partially_shipped" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Partially Shipped</a></li>
-                            <li><a href="#" class="dropdown-item" data-value="cancelled" tabIndex="-1"><input type="checkbox" class="form-check-input"/>Cancelled</a></li>
-                        </ul>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <select asp-for="StatusIds" asp-items="Model.StatusList"></select>
                     </div>
                 </div>                
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="input-group">
-                        <input id="filter" name="filter" type="text" class="form-control" placeholder="Filter..." value="@ViewData["filter"]">
+                        <input name="Filter" type="text" class="form-control" placeholder="Filter..." value="@Model.Filter">
                         <div class="input-group-append">
                             <button class="btn btn-info" type="submit">Filter</button>
                         </div>
@@ -38,12 +28,12 @@
                 </div>
                 <div class="col-md-2">
                     <div class="input-group date py-2">
-                        <input name="dateStart" type="text" class="date-from form-control" value="@ViewData["dateStart"]">
+                        <input name="DateStart" type="text" class="date-from form-control" value="@Html.DisplayFor(x => x.DateStart)">
                     </div>
                 </div>
                 <div class="col-md-2">
                     <div class="input-group date py-2">
-                        <input name="dateEnd" type="text" class="date-to form-control" value="@ViewData["dateEnd"]">
+                        <input name="DateEnd" type="text" class="date-to form-control" value="@Html.DisplayFor(x => x.DateEnd)">
                     </div>
                 </div>
                 <div class="col-md-2">
@@ -68,11 +58,13 @@
             </div>
         </form>
 
-        @foreach(ShopifyOrder order in Model) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
+        @foreach(ShopifyOrder order in Model.ShopifyOrders) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
     </div>
 
-    @section Scripts { @* Check also // https://github.com/MauriceZ/lannister/blob/9dfa9c19e6ecd120db240be6ccb419a0212169ec/app/assets/javascripts/dashboard.js // https://github.com/MauriceZ/lannister/blob/5befba458a14904599feb5d456619651791f02ce/app/views/dashboard/index.html.erb
-    *@
+    @section Scripts { 
+        @* 
+        Check also // https://github.com/MauriceZ/lannister/blob/9dfa9c19e6ecd120db240be6ccb419a0212169ec/app/assets/javascripts/dashboard.js // https://github.com/MauriceZ/lannister/blob/5befba458a14904599feb5d456619651791f02ce/app/views/dashboard/index.html.erb
+        *@
     <script type="text/javascript">
         $(function() { // will trigger when the document is ready
             var $dateFromPicker = $('.date-from');
@@ -80,6 +72,12 @@
 
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
+            $('#StatusIds').multiselect({
+                templates: {
+                    li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
+                }
+            });
+ 
             $dateFromPicker.datepicker({
                     uiLibrary: 'bootstrap4',
                     iconsLibrary: 'fontawesome',
@@ -89,8 +87,8 @@
                 })
                 .on('close', function(e) {
                     window.location.href = "@Url.Action("", "Orders")" +
-                        "?dateStart=" + $dateFromPicker.val() +
-                        "&dateEnd=" + $dateToPicker.val();
+                        "?DateStart=" + $dateFromPicker.val() +
+                        "&DateEnd=" + $dateToPicker.val();
                 });
 
             $dateToPicker.datepicker({
@@ -102,18 +100,11 @@
                 })
                 .on('close', function(e) {
                     window.location.href = "@Url.Action("", "Orders")" +
-                        "?dateStart=" + $dateFromPicker.val() +
-                        "&dateEnd=" + $dateToPicker.val();
+                        "?DateStart=" + $dateFromPicker.val() +
+                        "&DateEnd=" + $dateToPicker.val();
                 });
 
-            $(".dropdown-menu li a").click(function(){
-                var selText = $(this).text();
-                $(this).parents('.dropdown').find('.dropdown-toggle').html(selText);
-            });
-
             $(".dropdown-item").click(function(e) {
-                //e.preventDefault(); // cancel the link behaviour
-
                 var dateRange = $(this).val();
                 var today = new Date();
                 var dateFrom = new Date();
