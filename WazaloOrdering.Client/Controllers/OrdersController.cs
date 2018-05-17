@@ -1,27 +1,37 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
-using WazaloOrdering.Client.Models;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Globalization;
 using System.Text.Encodings.Web;
 using System.Collections.Generic;
-using WazaloOrdering.DataStore;
-using System.Globalization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using System.IO;
-using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using System.Linq;
+using WazaloOrdering.DataStore;
+using WazaloOrdering.Client.Models;
 
 namespace WazaloOrdering.Client.Controllers
 {
     public class OrdersController : Controller
     {
+        private readonly IConfiguration appConfig;
+        public OrdersController(IConfiguration configuration)
+        {
+            appConfig = configuration;
+        }
+
         // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06[&filter=abcd][&statusIds=2,3]
         [Authorize]
         [HttpGet]
         public IActionResult Index(string dateStart, string dateEnd, string filter = null, int[] statusIds = null)
         {
+            string shopifyDomain = appConfig["ShopifyDomain"];
+            string shopifyAPIKey = appConfig["ShopifyAPIKey"];
+
             var model = new OrdersViewModel();
 
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
@@ -31,32 +41,53 @@ namespace WazaloOrdering.Client.Controllers
 
             model.StatusList = GetOrderStatusList();
 
-            if (statusIds == null || statusIds.Count() == 0) {
+            if (statusIds == null || statusIds.Count() == 0)
+            {
                 model.StatusIds = new int[] { 1 }; // to order    
-            } else {
+            }
+            else
+            {
                 model.StatusIds = statusIds;
-            }            
+            }
 
             // add date filter, created_at_min and created_at_max
             string querySuffix = string.Format(CultureInfo.InvariantCulture, "created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", model.DateStart, model.DateEnd);
 
-            if (model.StatusIds.Contains(1)) {
-                querySuffix += "&status=open";
+            string statusQuery = "";
+            if (model.StatusIds.Contains(1) || model.StatusIds.Contains(6))
+            {
+                if (model.StatusIds.Contains(1))
+                {
+                    statusQuery = "&status=open";
+                }
+                else
+                {
+                    statusQuery = "&status=cancelled";
+                }
             }
-            if (model.StatusIds.Contains(2)) {
+            else
+            {
+                statusQuery = "&status=any";
+            }
+            querySuffix += statusQuery;
+
+            string fulfillmentQuery = "";
+            /*
+            if (model.StatusIds.Contains(2))
+            {
                 querySuffix += "&fulfillment_status=unshipped";
             }
-            if (model.StatusIds.Contains(4)) {
+            if (model.StatusIds.Contains(4))
+            {
                 querySuffix += "&fulfillment_status=shipped";
             }
-            if (model.StatusIds.Contains(5)) {
+            if (model.StatusIds.Contains(5))
+            {
                 querySuffix += "&fulfillment_status=partial";
             }
-            if (model.StatusIds.Contains(6)) {
-                querySuffix += "&status=cancelled";
-            }
+            */
 
-            var orders = DataFactory.GetShopifyOrders(querySuffix);
+            var orders = DataFactory.GetShopifyOrders(appConfig, querySuffix);
             model.ShopifyOrders = orders;
 
             return View(model);
@@ -73,20 +104,22 @@ namespace WazaloOrdering.Client.Controllers
                 var message = string.Join(" | ", ModelState.Values
                         .SelectMany(v => v.Errors)
                         .Select(e => e.ErrorMessage));
-                        Console.WriteLine("ERROR: " + message);
+                Console.WriteLine("ERROR: " + message);
                 return View(model);
             }
 
             // The model passed validation, do something with it
-            
+
             //var json = JsonConvert.SerializeObject(model);
             //return Content(json);
 
-            return RedirectToAction("Index", new { 
-                DateStart = model.DateStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),                
+            return RedirectToAction("Index", new
+            {
+                DateStart = model.DateStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 DateEnd = model.DateEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 Filter = model.Filter,
-                StatusIds = model.StatusIds });
+                StatusIds = model.StatusIds
+            });
         }
 
         // GET: /Orders/Order/123134
@@ -97,7 +130,7 @@ namespace WazaloOrdering.Client.Controllers
             // add field filter
             string querySuffix = "";
 
-            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var order = DataFactory.GetShopifyOrder(appConfig, id, querySuffix);
 
             ViewData["id"] = id;
             return View(order);
@@ -110,7 +143,7 @@ namespace WazaloOrdering.Client.Controllers
         {
             // add field filter
             string querySuffix = "";
-            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var order = DataFactory.GetShopifyOrder(appConfig, id, querySuffix);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
             ViewData["id"] = id;
@@ -123,7 +156,7 @@ namespace WazaloOrdering.Client.Controllers
         {
             // add field filter
             string querySuffix = "";
-            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var order = DataFactory.GetShopifyOrder(appConfig, id, querySuffix);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
             // Deserialize model here 
@@ -140,9 +173,18 @@ namespace WazaloOrdering.Client.Controllers
         [HttpGet]
         public IActionResult MailPurchaseOrder(string id)
         {
+            var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
+            var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
+            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
+
+            var emailNote = string.Join("\n", purchaseOrderEmailNote);
+
+            if (purchaseOrderEmailTo == null || purchaseOrderEmailNote == null)
+                return Content("");
+
             // add field filter
             string querySuffix = "";
-            var order = DataFactory.GetShopifyOrder(id, querySuffix);
+            var order = DataFactory.GetShopifyOrder(appConfig, id, querySuffix);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
             // Deserialize model here 
@@ -153,31 +195,17 @@ namespace WazaloOrdering.Client.Controllers
 
             try
             {
-                string to = "perivar@nerseth.com";
-                string cc = null;
+                string to = purchaseOrderEmailTo;
+                string cc = purchaseOrderEmailCC;
 
                 // remove all non digit characters from the order id (#2020 => 2020)
                 var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
                 string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
 
                 string subject = string.Format("Purchase Order {0}", order.Name);
-                string body = @"
-    Hi Aiminyz,<br>
-    Attached is a new purchase order from Wazalo.com.<br>
-    It has already been paid using PayPal.<br>
-    Please confirm this order and send us the tracking number(s) as soon as the order has been processed.<br>
-    <br>
-    <strong>Note!</strong><br>
-    We are dropshipping! Please, don't include any invoices or promo materials into the package.<br>
-    Please also ensure the total shipment value never exceed $40 including shipment cost.<br> 
-    If so, please separate into more shipments. Also, always use ePacket for shipment.<br>
-    If you have any questions, please send an email to shop@wazalo.com<br>
-    <br>
-    Best Regards,<br>
-    Wazalo                          
-                    ";
+                string body = emailNote;
 
-                Utils.SendMailWithAttachment(subject, body, to, cc, fileDownloadName, bytes);
+                Utils.SendMailWithAttachment(appConfig, subject, body, to, cc, fileDownloadName, bytes);
                 ViewData["emailSent"] = true;
                 ViewData["to"] = to;
             }
@@ -258,7 +286,8 @@ namespace WazaloOrdering.Client.Controllers
             return 0;
         }
 
-        private List<SelectListItem> GetOrderStatusList() {
+        private List<SelectListItem> GetOrderStatusList()
+        {
             var statusList = new List<SelectListItem>() {
                 new SelectListItem() { Text = "To Order", Value = "1" },
                 new SelectListItem() { Text = "Order Placed", Value = "2" },
@@ -269,7 +298,7 @@ namespace WazaloOrdering.Client.Controllers
             };
 
             return statusList;
-        } 
+        }
 
         private Tuple<DateTime, DateTime> GetDateFromTo(string dateStart, string dateEnd)
         {

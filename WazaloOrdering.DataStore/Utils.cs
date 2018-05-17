@@ -1,4 +1,5 @@
 ﻿using CsvHelper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -113,9 +114,9 @@ namespace WazaloOrdering.DataStore
             }
         }
 
-        public static void SendMailWithAttachment(string subject, string body, string to, string cc, string fileDownloadName, byte[] bytes)
+        public static void SendMailWithAttachment(IConfiguration appConfig, string subject, string body, string to, string cc, string fileDownloadName, byte[] bytes)
         {
-            var config = new MyConfiguration();
+            var config = new MyConfiguration(appConfig);
             var emailSMTPServer = config.GetString("EmailSMTPServer");
             var emailSMTPPort = config.GetInt("EmailSMTPPort");
             var emailUserName = config.GetString("EmailUserName");
@@ -134,7 +135,7 @@ namespace WazaloOrdering.DataStore
             {
                 mail.From = new MailAddress(emailUserName, emailDisplayName);
                 mail.To.Add(to);
-                if (cc != null) mail.CC.Add(cc);
+                if (cc != null && "" != cc) mail.CC.Add(cc);
 
                 mail.Subject = subject;
                 mail.Body = body;

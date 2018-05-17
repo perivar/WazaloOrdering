@@ -28,11 +28,16 @@ namespace WazaloOrdering.Client
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(options => { options.LoginPath = "/Home/Login"; });
+            
             services.AddMvc().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AuthorizeFolder("/");
                 options.Conventions.AllowAnonymousToPage("/Home/Login");
             });
+
+            // An IConfiguration instance will be added to the services container by default in ASP.NET Core 2.0, 
+            // so that all applications can easily retrieve configuration values via the container
+            //services.AddSingleton<IConfiguration>(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

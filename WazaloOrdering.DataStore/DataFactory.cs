@@ -6,10 +6,10 @@ namespace WazaloOrdering.DataStore
 {
     public class DataFactory
     {
-        public static List<ShopifyOrder> GetShopifyOrders(string querySuffix)
+        public static List<ShopifyOrder> GetShopifyOrders(IConfiguration appConfig, string querySuffix)
         {
             // get shopify configuration parameters
-            var config = new MyConfiguration();
+            var config = new MyConfiguration(appConfig);
             string shopifyDomain = config.GetString("ShopifyDomain");
             string shopifyAPIKey = config.GetString("ShopifyAPIKey");
             string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
@@ -31,10 +31,10 @@ namespace WazaloOrdering.DataStore
             return shopifyOrders;
         }
 
-        public static ShopifyOrder GetShopifyOrder(string orderId, string querySuffix)
+        public static ShopifyOrder GetShopifyOrder(IConfiguration appConfig, string orderId, string querySuffix)
         {
             // get shopify configuration parameters
-            var config = new MyConfiguration();
+            var config = new MyConfiguration(appConfig);
             string shopifyDomain = config.GetString("ShopifyDomain");
             string shopifyAPIKey = config.GetString("ShopifyAPIKey");
             string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using WazaloOrdering.Client.Models;
 using WazaloOrdering.DataStore;
 
@@ -16,6 +17,13 @@ namespace WazaloOrdering.Client.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly IConfiguration appConfig;
+        
+        public HomeController(IConfiguration configuration)
+        {
+            appConfig = configuration;
+        }
+
         [Authorize]
         public IActionResult Index()
         {
@@ -45,9 +53,8 @@ namespace WazaloOrdering.Client.Controllers
         public IActionResult Login(LoginData loginData)
         {
             // get shopify configuration parameters
-            var config = new MyConfiguration();
-            string username = config.GetString("OberloUsername");
-            string password = config.GetString("OberloPassword");
+            string username = appConfig["OberloUsername"];
+            string password = appConfig["OberloPassword"];
 
             if (ModelState.IsValid)
             {

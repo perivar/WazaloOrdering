@@ -19,6 +19,10 @@ namespace WazaloOrdering.Client
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration(builder =>
+                {
+                    builder.AddUserSecrets<Startup>();
+                })
                 .UseStartup<Startup>()
                 .Build();
     }

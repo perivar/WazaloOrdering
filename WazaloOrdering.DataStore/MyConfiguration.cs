@@ -19,17 +19,9 @@ namespace WazaloOrdering.DataStore
             return int.Parse(configuration[key]);
         }
 
-        public MyConfiguration()
+        public MyConfiguration(IConfiguration appConfig)
         {
-            var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile("appsettings.development.json", optional: true)
-                .AddUserSecrets<MyConfiguration>()
-                .AddEnvironmentVariables();
-
-            configuration = configurationBuilder.Build();
+            configuration = appConfig;
         }
     }
 }
