@@ -38,7 +38,23 @@ namespace WazaloOrdering.Client.Controllers
             }            
 
             // add date filter, created_at_min and created_at_max
-            string querySuffix = string.Format(CultureInfo.InvariantCulture, "status=any&created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", model.DateStart, model.DateEnd);
+            string querySuffix = string.Format(CultureInfo.InvariantCulture, "created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", model.DateStart, model.DateEnd);
+
+            if (model.StatusIds.Contains(1)) {
+                querySuffix += "&status=open";
+            }
+            if (model.StatusIds.Contains(2)) {
+                querySuffix += "&fulfillment_status=unshipped";
+            }
+            if (model.StatusIds.Contains(4)) {
+                querySuffix += "&fulfillment_status=shipped";
+            }
+            if (model.StatusIds.Contains(5)) {
+                querySuffix += "&fulfillment_status=partial";
+            }
+            if (model.StatusIds.Contains(6)) {
+                querySuffix += "&status=cancelled";
+            }
 
             var orders = DataFactory.GetShopifyOrders(querySuffix);
             model.ShopifyOrders = orders;
