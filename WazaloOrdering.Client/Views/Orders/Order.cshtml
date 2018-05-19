@@ -13,3 +13,17 @@
         { "orderPage", true }
     }
 )
+
+ @section Scripts { 
+ <script type="text/javascript">
+        $(function() { // will trigger when the document is ready 
+            $(".loadlater").each(function(index, element) {
+                var url = $(element).data('src');
+
+                $.get( url, function( src ) {        
+                    $(element).attr("src", src);        
+                });
+            });
+        });
+</script>
+}

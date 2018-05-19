@@ -180,15 +180,10 @@
         $(".loadlater").each(function(index, element) {
             var url = $(element).data('src');
 
-            $.getJSON(url, function(data) {
-                //$.each( data, function( i, item ) {
-                //    var src = item.src;
-                //    $(element).attr("src", src);
-                //});
-                $(element).attr("src", data[0].src);
-            }); 
+            $.get( url, function( src ) {        
+                 $(element).attr("src", src);        
+            });
         });
-
 
     </script>
     }

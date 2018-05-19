@@ -102,12 +102,11 @@ namespace WazaloOrdering.Client.Controllers
 
         // GET: /Images/Product/123134
         [Authorize]
-        [HttpGet("/Images/Product/{id}", Name = "Images")]
+        [HttpGet("/Images/Product/{id}")]
         public async Task<ActionResult> GetImages(long id)
         {
             var productImages = await Shopify.GetShopifyProductImages(appConfig, id);
-
-            return Ok(productImages);
+            return Content(productImages.FirstOrDefault().Src);
         }
 
         // GET: /Orders/PurchaseOrder/123134
