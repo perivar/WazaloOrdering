@@ -120,13 +120,34 @@ namespace WazaloOrdering.Client.Controllers
             var order = DataFactory.GetShopifyOrder(appConfig, orderId);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
+            var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
+            var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
+
             // read multiline string from jsong config file
             var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
             var emailNote = string.Join("\n", purchaseOrderEmailNote);
 
-            ViewData["id"] = id;
-            ViewData["purchaseOrderEmailNote"] = emailNote;
-            return View(purchaseOrders);
+            var model = new PurchaseOrderViewModel() {
+                OrderId = orderId,
+                EmailTo = purchaseOrderEmailTo,
+                EmailCC = purchaseOrderEmailCC,
+                EmailBody = emailNote,
+                PurchaseOrders = purchaseOrders
+            };
+            
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult PurchaseOrder(PurchaseOrderViewModel model)
+        {
+            string emailTo = HttpContext.Request.Form["emailTo"];
+            string emailCC = HttpContext.Request.Form["emailCC"];
+            string emailBody = HttpContext.Request.Form["emailBody"];
+            
+            return Content($"{emailTo}\n{emailCC}\n{emailBody}");
         }
 
         [Authorize]

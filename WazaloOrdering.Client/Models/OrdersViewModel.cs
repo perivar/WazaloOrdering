@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WazaloOrdering.DataStore;
-using System.ComponentModel.DataAnnotations;
 using ShopifySharp;
 
 namespace WazaloOrdering.Client.Models

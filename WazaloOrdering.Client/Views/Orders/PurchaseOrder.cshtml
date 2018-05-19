@@ -1,12 +1,12 @@
-@model IEnumerable<PurchaseOrder> 
+@model PurchaseOrderViewModel 
 @{
     ViewData["Title"] = "Purchase Order";
-    var orders = @Model;
+    var orders = @Model.PurchaseOrders;
 }
 
 <h2>Aiminyz - Purchase Order from Wazalo.com</h2>
 <br>
-
+<form asp-controller="Orders" asp-action="PurchaseOrder" method="post">
 <table class="table table-bordered table-hover table-sm">
   <thead class="thead-light">
       <tr>
@@ -43,11 +43,18 @@
 </table>
 
 <div class="form-group">
-<label for="exampleTextarea">Email Text</label>
-<textarea class="form-control" id="editor" rows="12">
-@Html.Raw(@ViewData["purchaseOrderEmailNote"])
-</textarea>
+    <input asp-for="OrderId" type="hidden">
+    <label asp-for="EmailTo"></label>
+    <input asp-for="EmailTo" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
+    <label asp-for="EmailCC"></label>
+    <input asp-for="EmailCC" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
 </div>
+<div class="form-group">
+    <label asp-for="EmailBody">Email Body:</label>
+    <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
+</div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
 
 <br>
 <br>
@@ -67,7 +74,7 @@
 @section Scripts { 
     <script type="text/javascript">
         $(document).ready(function () {
-            $("#editor").editor({
+            $("#EmailBody").editor({
                 uiLibrary: 'bootstrap4',
                 height: 380
             });
