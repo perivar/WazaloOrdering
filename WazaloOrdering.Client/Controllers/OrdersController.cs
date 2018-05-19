@@ -15,6 +15,7 @@ using WazaloOrdering.DataStore;
 using WazaloOrdering.Client.Models;
 using ShopifySharp.Filters;
 using ShopifySharp;
+using System.Threading.Tasks;
 
 namespace WazaloOrdering.Client.Controllers
 {
@@ -37,7 +38,7 @@ namespace WazaloOrdering.Client.Controllers
             model.DateStart = fromto.Item1;
             model.DateEnd = Utils.AbsoluteEnd(fromto.Item2);
             model.Filter = filter;
-       
+
             FillStatusLists(model, fulfillmentStatusId, financialStatusId, statusId);
 
             // add date filter, created_at_min and created_at_max
@@ -95,18 +96,18 @@ namespace WazaloOrdering.Client.Controllers
             long orderId = long.Parse(id);
             var order = DataFactory.GetShopifyOrder(appConfig, orderId);
 
-            // fetching product images
-            var productImageDictionary = new Dictionary<long, ProductImage>();
-            foreach (var lineItem in order.LineItems) {
-                if (lineItem.ProductId.HasValue) {
-                    var productImages = DataFactory.GetShopifyProductImages(appConfig, lineItem.ProductId.Value);
-                    productImageDictionary.Add(lineItem.Id.Value, productImages.FirstOrDefault());                    
-                }
-            }
-
             ViewData["id"] = id;
-            ViewData["productImageDictionary"] = productImageDictionary;
             return View(order);
+        }
+
+        // GET: /Images/Product/123134
+        [Authorize]
+        [HttpGet("/Images/Product/{id}", Name = "Images")]
+        public async Task<ActionResult> GetImages(long id)
+        {
+            var productImages = await Shopify.GetShopifyProductImages(appConfig, id);
+
+            return Ok(productImages);
         }
 
         // GET: /Orders/PurchaseOrder/123134
@@ -197,7 +198,8 @@ namespace WazaloOrdering.Client.Controllers
             return fileDownloadName;
         }
 
-        private void FillStatusLists(OrdersViewModel model, string fulfillmentStatusId, string financialStatusId, string statusId) {
+        private void FillStatusLists(OrdersViewModel model, string fulfillmentStatusId, string financialStatusId, string statusId)
+        {
 
             model.FulfillmentStatusList = GetOrderFulfillmentStatusList();
             model.FinancialStatusList = GetOrderFinancialStatusList();

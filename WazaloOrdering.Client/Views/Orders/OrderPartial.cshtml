@@ -2,7 +2,6 @@
 @{
     var order = @Model;
     var isOrderPage = (bool)ViewData["orderPage"];
-    var productImageDictionary = ViewData["productImageDictionary"];
 }
 
 <div class="row align-items-center mt-3">
@@ -60,15 +59,10 @@
         <div class="row align-items-center bg-light text-dark border clickable-row" data-href="@Url.Action("Order", "Orders", new { Id = @order.Id})">
             <div class="col-md-2">
                 @{ 
-                    if (productImageDictionary != null) {                        
-                        var productImages = (productImageDictionary as Dictionary<long, ProductImage>);
-                        var productImage = productImages[lineItem.Id.Value] as ProductImage;
-                        <img width="80" class="img" src="@productImage.Src">
+                    if (lineItem.ProductId.HasValue) {                        
+                        <img width="100" class="img loadlater" data-src="/Images/Product/@lineItem.ProductId.Value"/>
                     }
                 }
-                @*{ if (lineItem.ProductImages != null) { ShopifyProductImage productImage = lineItem.ProductImages.First();
-                <img width="80" class="img" src="@productImage.Src" alt="@productImage.Alt"> } }
-                *@
             </div>
             <div class="col-md-3"><span class="text-info">@lineItem.Title</span><br><small>SKU: @lineItem.SKU</small></div>
             <div class="col-md-2">@lineItem.VariantTitle</div>
