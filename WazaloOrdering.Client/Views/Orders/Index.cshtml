@@ -7,18 +7,28 @@
                 <h3>Your orders for @Html.DisplayFor(x => x.DateStart) - @Html.DisplayFor(x => x.DateEnd)</h3>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-primary float-right">Get All Tracking Codes</button>
+                 @* <button class="btn btn-primary float-right">Get All Tracking Codes</button> *@
             </div>
         </div>
 
         <form asp-controller="Orders" asp-action="" method="post">
             <div class="row align-items-center mt-2">
-                <div class="col-md-3">
+                <div class="col-md-1">
+                    <div class="input-group">
+                        <select asp-for="FulfillmentStatusIds" asp-items="Model.FulfillmentStatusList"></select>
+                    </div>
+                </div>                
+                <div class="col-md-1">
+                    <div class="input-group">
+                        <select asp-for="FinancialStatusIds" asp-items="Model.FinancialStatusList"></select>
+                    </div>
+                </div>                
+                <div class="col-md-2">
                     <div class="input-group">
                         <select asp-for="StatusIds" asp-items="Model.StatusList"></select>
                     </div>
                 </div>                
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="input-group">
                         <input name="Filter" type="text" class="form-control" placeholder="Filter..." value="@Model.Filter">
                         <div class="input-group-append">
@@ -72,12 +82,22 @@
 
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
+            $('#FulfillmentStatusIds').multiselect({
+                templates: {
+                    li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
+                }
+            });
+            $('#FinancialStatusIds').multiselect({
+                templates: {
+                    li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
+                }
+            });
             $('#StatusIds').multiselect({
                 templates: {
                     li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
                 }
             });
- 
+
             $dateFromPicker.datepicker({
                     uiLibrary: 'bootstrap4',
                     iconsLibrary: 'fontawesome',

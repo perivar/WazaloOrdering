@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using WazaloOrdering.DataStore;
 using WazaloOrdering.Client.Models;
+using ShopifySharp.Filters;
 
 namespace WazaloOrdering.Client.Controllers
 {
@@ -27,66 +28,95 @@ namespace WazaloOrdering.Client.Controllers
         // GET: /Orders?dateStart=2018-04-16&dateEnd=2018-05-06[&filter=abcd][&statusIds=2,3]
         [Authorize]
         [HttpGet]
-        public IActionResult Index(string dateStart, string dateEnd, string filter = null, int[] statusIds = null)
+        public IActionResult Index(string dateStart, string dateEnd, string filter = null, int[] fulfillmentStatusIds = null, int[] financialStatusIds = null, int[] statusIds = null)
         {
-            string shopifyDomain = appConfig["ShopifyDomain"];
-            string shopifyAPIKey = appConfig["ShopifyAPIKey"];
-
             var model = new OrdersViewModel();
 
             Tuple<DateTime, DateTime> fromto = GetDateFromTo(dateStart, dateEnd);
             model.DateStart = fromto.Item1;
             model.DateEnd = Utils.AbsoluteEnd(fromto.Item2);
             model.Filter = filter;
-
-            model.StatusList = GetOrderStatusList();
-
-            if (statusIds == null || statusIds.Count() == 0)
-            {
-                model.StatusIds = new int[] { 1 }; // to order    
-            }
-            else
-            {
-                model.StatusIds = statusIds;
-            }
+       
+            FillStatusLists(model, fulfillmentStatusIds, financialStatusIds, statusIds);
 
             // add date filter, created_at_min and created_at_max
             string querySuffix = string.Format(CultureInfo.InvariantCulture, "created_at_min={0:yyyy-MM-ddTHH:mm:sszzz}&created_at_max={1:yyyy-MM-ddTHH:mm:sszzz}", model.DateStart, model.DateEnd);
 
-            string statusQuery = "";
-            if (model.StatusIds.Contains(1) || model.StatusIds.Contains(6))
+            // fulfillment
+            string fulfillmentQuery = "";
+            if (model.FulfillmentStatusIds.Contains(1))
             {
-                if (model.StatusIds.Contains(1))
-                {
-                    statusQuery = "&status=open";
-                }
-                else
-                {
-                    statusQuery = "&status=cancelled";
-                }
+                fulfillmentQuery = "&fulfillment_status=any";
             }
-            else
+            if (model.FulfillmentStatusIds.Contains(2))
+            {
+                fulfillmentQuery = "&fulfillment_status=shipped";
+            }
+            if (model.FulfillmentStatusIds.Contains(3))
+            {
+                fulfillmentQuery = "&fulfillment_status=partial";
+            }
+            if (model.FulfillmentStatusIds.Contains(4))
+            {
+                fulfillmentQuery = "&fulfillment_status=unshipped";
+            }
+            querySuffix += fulfillmentQuery;
+
+            // financial
+            string financialQuery = "";
+            if (model.FinancialStatusIds.Contains(1))
+            {
+                financialQuery = "&financial_status=any";
+            }
+            if (model.FinancialStatusIds.Contains(2))
+            {
+                financialQuery = "&financial_status=partially_paid";
+            }
+            if (model.FinancialStatusIds.Contains(3))
+            {
+                financialQuery = "&financial_status=paid";
+            }
+            if (model.FinancialStatusIds.Contains(4))
+            {
+                financialQuery = "&financial_status=partially_refunded";
+            }
+            if (model.FinancialStatusIds.Contains(5))
+            {
+                financialQuery = "&financial_status=refunded";
+            }
+            querySuffix += financialQuery;
+
+            // status
+            string statusQuery = "";
+            if (model.StatusIds.Contains(1))
+            {
+                statusQuery = "&status=open";
+            }
+            if (model.StatusIds.Contains(2))
+            {
+                statusQuery = "&status=closed";
+            }
+            if (model.StatusIds.Contains(3))
+            {
+                statusQuery = "&status=cancelled";
+            }
+            if (model.StatusIds.Contains(4))
             {
                 statusQuery = "&status=any";
             }
             querySuffix += statusQuery;
 
-            string fulfillmentQuery = "";
-            /*
-            if (model.StatusIds.Contains(2))
+/*
+            var orderFilter = new OrderFilter()
             {
-                querySuffix += "&fulfillment_status=unshipped";
-            }
-            if (model.StatusIds.Contains(4))
-            {
-                querySuffix += "&fulfillment_status=shipped";
-            }
-            if (model.StatusIds.Contains(5))
-            {
-                querySuffix += "&fulfillment_status=partial";
-            }
-            */
-
+                CreatedAtMin = model.DateStart,
+                CreatedAtMax = model.DateEnd,
+                FulfillmentStatus = "any",
+                FinancialStatus = "any",
+                Status = "any"
+            };
+            var testorders = DataFactory.GetShopifyOrders(appConfig, orderFilter);
+*/
             var orders = DataFactory.GetShopifyOrders(appConfig, querySuffix);
             model.ShopifyOrders = orders;
 
@@ -118,6 +148,8 @@ namespace WazaloOrdering.Client.Controllers
                 DateStart = model.DateStart.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 DateEnd = model.DateEnd.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture),
                 Filter = model.Filter,
+                FulfillmentStatusIds = model.FulfillmentStatusIds,
+                FinancialStatusIds = model.FinancialStatusIds,
                 StatusIds = model.StatusIds
             });
         }
@@ -146,7 +178,12 @@ namespace WazaloOrdering.Client.Controllers
             var order = DataFactory.GetShopifyOrder(appConfig, id, querySuffix);
             var purchaseOrders = GetPurchaseOrderFromShopifyOrder(order);
 
+            // read multiline string from jsong config file
+            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
+            var emailNote = string.Join("\n", purchaseOrderEmailNote);
+
             ViewData["id"] = id;
+            ViewData["purchaseOrderEmailNote"] = emailNote;
             return View(purchaseOrders);
         }
 
@@ -163,9 +200,7 @@ namespace WazaloOrdering.Client.Controllers
             var result = Utils.WriteCsvToMemory(purchaseOrders, typeof(PurchaseOrderMap));
             var memoryStream = new MemoryStream(result);
 
-            // remove all non digit characters from the order id (#2020 => 2020)
-            var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
-            string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
+            string fileDownloadName = GetFileDownloadName(order);
             return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
         }
 
@@ -175,12 +210,13 @@ namespace WazaloOrdering.Client.Controllers
         {
             var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
             var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
-            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
 
+            // read multiline string from jsong config file
+            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
             var emailNote = string.Join("\n", purchaseOrderEmailNote);
 
             if (purchaseOrderEmailTo == null || purchaseOrderEmailNote == null)
-                return Content("");
+                return Content("Missing to address or email note!");
 
             // add field filter
             string querySuffix = "";
@@ -197,13 +233,9 @@ namespace WazaloOrdering.Client.Controllers
             {
                 string to = purchaseOrderEmailTo;
                 string cc = purchaseOrderEmailCC;
-
-                // remove all non digit characters from the order id (#2020 => 2020)
-                var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
-                string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
-
                 string subject = string.Format("Purchase Order {0}", order.Name);
                 string body = emailNote;
+                string fileDownloadName = GetFileDownloadName(order);
 
                 Utils.SendMailWithAttachment(appConfig, subject, body, to, cc, fileDownloadName, bytes);
                 ViewData["emailSent"] = true;
@@ -217,6 +249,48 @@ namespace WazaloOrdering.Client.Controllers
 
             ViewData["id"] = id;
             return View(purchaseOrders);
+        }
+
+        private static string GetFileDownloadName(ShopifyOrder order)
+        {
+            // remove all non digit characters from the order id (#2020 => 2020)
+            var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
+            string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
+            return fileDownloadName;
+        }
+
+        private void FillStatusLists(OrdersViewModel model, int[] fulfillmentStatusIds, int[] financialStatusIds, int[] statusIds) {
+
+            model.FulfillmentStatusList = GetOrderFulfillmentStatusList();
+            model.FinancialStatusList = GetOrderFinancialStatusList();
+            model.StatusList = GetOrderStatusList();
+
+            if (fulfillmentStatusIds == null || fulfillmentStatusIds.Count() == 0)
+            {
+                model.FulfillmentStatusIds = new int[] { 1 }; // any
+            }
+            else
+            {
+                model.FulfillmentStatusIds = fulfillmentStatusIds;
+            }
+
+            if (financialStatusIds == null || financialStatusIds.Count() == 0)
+            {
+                model.FinancialStatusIds = new int[] { 1 }; // any   
+            }
+            else
+            {
+                model.FinancialStatusIds = financialStatusIds;
+            }
+
+            if (statusIds == null || statusIds.Count() == 0)
+            {
+                model.StatusIds = new int[] { 1 }; // open  
+            }
+            else
+            {
+                model.StatusIds = statusIds;
+            }
         }
 
         private List<PurchaseOrder> GetPurchaseOrderFromShopifyOrder(ShopifyOrder order)
@@ -239,7 +313,7 @@ namespace WazaloOrdering.Client.Controllers
                 purchaseOrder.City = Utils.GetNormalizedEquivalentPhrase(order.CustomerCity);
                 purchaseOrder.Country = Utils.GetNormalizedEquivalentPhrase(order.CustomerCountry);
                 purchaseOrder.ZipCode = order.CustomerZipCode;
-                purchaseOrder.Telephone = "+47 41 31 88 53";
+                purchaseOrder.Telephone = appConfig["PurchaseOrderTelephone"];
                 purchaseOrder.Remarks = Utils.GetNormalizedEquivalentPhrase(order.Note);
 
                 purchaseOrders.Add(purchaseOrder);
@@ -286,15 +360,36 @@ namespace WazaloOrdering.Client.Controllers
             return 0;
         }
 
+        private List<SelectListItem> GetOrderFulfillmentStatusList()
+        {
+            var statusList = new List<SelectListItem>() {
+                new SelectListItem() { Text = "Any", Value = "1" },
+                new SelectListItem() { Text = "Shipped", Value = "2" },
+                new SelectListItem() { Text = "Partially Shipped", Value = "3" },
+                new SelectListItem() { Text = "Unshipped", Value = "4" },
+            };
+
+            return statusList;
+        }
+        private List<SelectListItem> GetOrderFinancialStatusList()
+        {
+            var statusList = new List<SelectListItem>() {
+                new SelectListItem() { Text = "Any", Value = "1" },
+                new SelectListItem() { Text = "Partially Paid", Value = "2" },
+                new SelectListItem() { Text = "Paid", Value = "3" },
+                new SelectListItem() { Text = "Partially Refunded", Value = "4" },
+                new SelectListItem() { Text = "Refunded", Value = "5" },
+            };
+
+            return statusList;
+        }
         private List<SelectListItem> GetOrderStatusList()
         {
             var statusList = new List<SelectListItem>() {
-                new SelectListItem() { Text = "To Order", Value = "1" },
-                new SelectListItem() { Text = "Order Placed", Value = "2" },
-                new SelectListItem() { Text = "In Processing", Value = "3" },
-                new SelectListItem() { Text = "Shipped", Value = "4" },
-                new SelectListItem() { Text = "Partially Shipped", Value = "5" },
-                new SelectListItem() { Text = "Cancelled", Value = "6" }
+                new SelectListItem() { Text = "Open", Value = "1" },
+                new SelectListItem() { Text = "Closed", Value = "2" },
+                new SelectListItem() { Text = "Cancelled", Value = "3" },
+                new SelectListItem() { Text = "Any", Value = "4" },
             };
 
             return statusList;

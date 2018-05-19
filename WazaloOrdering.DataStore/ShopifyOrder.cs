@@ -7,6 +7,7 @@ namespace WazaloOrdering.DataStore
     {
         public long Id { get; set; }
 
+        public DateTime ClosedAt { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime ProcessedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -43,6 +44,14 @@ namespace WazaloOrdering.DataStore
             get
             {
                 return (CancelledAt != default(DateTime) ? true : false);
+            }
+        }
+
+        public bool Closed
+        {
+            get
+            {
+                return (ClosedAt != default(DateTime) ? true : false);
             }
         }
 

@@ -1,6 +1,4 @@
-﻿using CsvHelper;
-using Microsoft.Extensions.Configuration;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,6 +7,8 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using CsvHelper;
 using Unidecode.NET;
 
 namespace WazaloOrdering.DataStore
@@ -114,6 +114,16 @@ namespace WazaloOrdering.DataStore
             }
         }
 
+        /// <summary>
+        /// Send mail with attachment created using the byte array
+        /// </summary>
+        /// <param name="appConfig">the configuration that holds the email server info</param>
+        /// <param name="subject">mail subject</param>
+        /// <param name="body">mail body</param>
+        /// <param name="to">mail to</param>
+        /// <param name="cc">mail cc</param>
+        /// <param name="fileDownloadName">the filename of the attachment</param>
+        /// <param name="bytes">the byte array</param>
         public static void SendMailWithAttachment(IConfiguration appConfig, string subject, string body, string to, string cc, string fileDownloadName, byte[] bytes)
         {
             var config = new MyConfiguration(appConfig);
@@ -153,6 +163,11 @@ namespace WazaloOrdering.DataStore
             }
         }
 
+        /// <summary>
+        /// Return a transliterated string (where all non english characters are replaced)
+        /// </summary>
+        /// <param name="phrase">phrase containing non english characters</param>
+        /// <returns>the transliterated string</returns>
         public static string GetNormalizedEquivalentPhrase(string phrase)
         {   
             return phrase.Unidecode();

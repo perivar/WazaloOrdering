@@ -6,7 +6,7 @@ namespace WazaloOrdering.DataStore
 {
     public interface IMyConfiguration
     {
-        IConfiguration Configuration();
+        IConfiguration Configuration { get; set; }
 
         string GetString(string key);
 

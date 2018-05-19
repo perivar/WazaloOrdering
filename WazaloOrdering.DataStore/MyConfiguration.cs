@@ -6,22 +6,19 @@ namespace WazaloOrdering.DataStore
 {
     public class MyConfiguration : IMyConfiguration
     {
-        private IConfiguration configuration; 
-
-        public IConfiguration Configuration() {
-            return configuration;
+        public IConfiguration Configuration { get; set; }
+        
+        public MyConfiguration(IConfiguration appConfig)
+        {
+            Configuration = appConfig;
         }
+
         public string GetString(string key) {
-            return configuration[key];
+            return Configuration[key];
         }
 
         public int GetInt(string key) {
-            return int.Parse(configuration[key]);
-        }
-
-        public MyConfiguration(IConfiguration appConfig)
-        {
-            configuration = appConfig;
+            return int.Parse(Configuration[key]);
         }
     }
 }

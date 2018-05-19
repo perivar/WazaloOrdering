@@ -42,13 +42,12 @@
   </tbody>
 </table>
 
-<p><b>Note!</b></p>
-<p>We are dropshipping! 
-Please, don't include any invoices or promo materials into the package. 
-Please also ensure the total shipment value never exceed $40 including shipment cost. 
-If so, please separate into more shipments.
-Also, always use ePacket for shipment.</p>
-<p>If you have any questions, please send an email to <u><a href="mailto:shop@wazalo.com">shop@wazalo.com</a></u></p>
+<div class="form-group">
+<label for="exampleTextarea">Email Text</label>
+<textarea class="form-control" id="editor" rows="12">
+@Html.Raw(@ViewData["purchaseOrderEmailNote"])
+</textarea>
+</div>
 
 <br>
 <br>
@@ -64,3 +63,14 @@ Also, always use ePacket for shipment.</p>
 <br>
 <br>
 <a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a>
+
+@section Scripts { 
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#editor").editor({
+                uiLibrary: 'bootstrap4',
+                height: 380
+            });
+        });
+    </script>
+}
