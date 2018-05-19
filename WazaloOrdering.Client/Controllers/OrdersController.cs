@@ -106,6 +106,8 @@ namespace WazaloOrdering.Client.Controllers
         public async Task<ActionResult> GetImages(long id)
         {
             var productImages = await Shopify.GetShopifyProductImages(appConfig, id);
+            // only return the first image's source attribute
+            // https://github.com/nozzlegear/ShopifySharp/blob/master/ShopifySharp/Entities/ProductImage.cs
             return Content(productImages.FirstOrDefault().Src);
         }
 
