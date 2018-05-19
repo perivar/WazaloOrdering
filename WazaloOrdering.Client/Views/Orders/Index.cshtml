@@ -106,9 +106,8 @@
                     weekStartDay: 1
                 })
                 .on('close', function(e) {
-                    window.location.href = "@Url.Action("", "Orders")" +
-                        "?DateStart=" + $dateFromPicker.val() +
-                        "&DateEnd=" + $dateToPicker.val();
+                    var thisForm = $(this).parents('form');
+                    thisForm.submit();
                 });
 
             $dateToPicker.datepicker({
@@ -119,9 +118,8 @@
                     weekStartDay: 1
                 })
                 .on('close', function(e) {
-                    window.location.href = "@Url.Action("", "Orders")" +
-                        "?DateStart=" + $dateFromPicker.val() +
-                        "&DateEnd=" + $dateToPicker.val();
+                    var thisForm = $(this).parents('form');
+                    thisForm.submit();
                 });
 
             $(".dropdown-item").click(function(e) {
