@@ -4,6 +4,9 @@
     <UserSecretsId>wazalo-account-services</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.7"/>
     <PackageReference Include="BuildBundlerMinifier" Version="2.7.385"/>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.2"/>
