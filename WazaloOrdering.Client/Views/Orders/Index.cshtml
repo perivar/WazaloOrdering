@@ -15,17 +15,17 @@
             <div class="row align-items-center mt-2">
                 <div class="col-md-1">
                     <div class="input-group">
-                        <select asp-for="FulfillmentStatusIds" asp-items="Model.FulfillmentStatusList"></select>
+                        <select asp-for="FulfillmentStatusId" asp-items="Model.FulfillmentStatusList"></select>
                     </div>
                 </div>                
                 <div class="col-md-1">
                     <div class="input-group">
-                        <select asp-for="FinancialStatusIds" asp-items="Model.FinancialStatusList"></select>
+                        <select asp-for="FinancialStatusId" asp-items="Model.FinancialStatusList"></select>
                     </div>
                 </div>                
                 <div class="col-md-2">
                     <div class="input-group">
-                        <select asp-for="StatusIds" asp-items="Model.StatusList"></select>
+                        <select asp-for="StatusId" asp-items="Model.StatusList"></select>
                     </div>
                 </div>                
                 <div class="col-md-2">
@@ -68,7 +68,7 @@
             </div>
         </form>
 
-        @foreach(ShopifyOrder order in Model.ShopifyOrders) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
+        @foreach(Order order in Model.ShopifyOrders) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
     </div>
 
     @section Scripts { 
@@ -82,17 +82,17 @@
 
             var sevenDaysAgo = new Date(new Date().getTime() - daysToMillis(7));
 
-            $('#FulfillmentStatusIds').multiselect({
+            $('#FulfillmentStatusId').multiselect({
                 templates: {
                     li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
                 }
             });
-            $('#FinancialStatusIds').multiselect({
+            $('#FinancialStatusId').multiselect({
                 templates: {
                     li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
                 }
             });
-            $('#StatusIds').multiselect({
+            $('#StatusId').multiselect({
                 templates: {
                     li: '<li><a href="javascript:void(0);"><label class="text-secondary pl-2"></label></a></li>'
                 }

@@ -1,7 +1,8 @@
-@model ShopifyOrder
+@model Order
 @{
     var order = @Model;
     var isOrderPage = (bool)ViewData["orderPage"];
+    var productImageDictionary = ViewData["productImageDictionary"];
 }
 
 <div class="row align-items-center mt-3">
@@ -9,10 +10,10 @@
         <a class="btn btn-default" target="_blank" href="https://wazalo.myshopify.com/admin/orders/@order.Id"><strong>@order.Name</strong></a>
     </div>
     <div class="col-md-2">
-        @order.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+        @order.CreatedAt?.ToString("dd/MM/yyyy HH:mm")
     </div>
     <div class="col-md-3">
-        Customer: <span class="text-info">@order.CustomerName</span>
+        Customer: <span class="text-info">@order.Customer.FirstName @order.Customer.LastName</span>
     </div>
     <div class="col-md-6">
         @if(isOrderPage) {
@@ -24,19 +25,23 @@
 </div>
 <div class="row align-items-center">
     <div class="col-md-2">
-        Financial: @if (order.FinancialStatus.Equals("paid")) {
+        Financial: @if (order.FinancialStatus != null && order.FinancialStatus.Equals("paid")) {
         <span class="text-success">@order.FinancialStatus</span> } else {
         <span class="text-warning">@order.FinancialStatus</span> }
     </div>
     <div class="col-md-2">
-        Fulfillment: @if (order.FulfillmentStatus.Equals("fulfilled")) {
-        <span class="text-success">@order.FulfillmentStatus</span> } else {
-        <span class="text-warning">@order.FulfillmentStatus</span> }
+        Fulfillment: @if (order.FulfillmentStatus != null && order.FulfillmentStatus.Equals("fulfilled")) {
+        <span class="text-success">@order.FulfillmentStatus</span> 
+        } else if (order.FulfillmentStatus == null) {
+        <span class="text-danger">null</span> 
+        } else {
+        <span class="text-warning">@order.FulfillmentStatus</span> 
+        }
     </div>
     <div class="col-md-2">
-        Status: @if (order.Cancelled) {
+        Status: @if (order.CancelledAt.HasValue) {
         <span class="text-warning">cancelled</span> } 
-        else if (order.Closed) {
+        else if (order.ClosedAt.HasValue) {
         <span class="text-success">closed</span> 
         } else {
         <span class="text-success">open</span>
@@ -51,15 +56,24 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        @foreach(ShopifyOrderLineItem lineItem in order.LineItems) {
+        @foreach(LineItem lineItem in order.LineItems) {
         <div class="row align-items-center bg-light text-dark border clickable-row" data-href="@Url.Action("Order", "Orders", new { Id = @order.Id})">
-            <div class="col-md-2">@{ if (lineItem.ProductImages != null) { ShopifyProductImage productImage = lineItem.ProductImages.First();
+            <div class="col-md-2">
+                @{ 
+                    if (productImageDictionary != null) {                        
+                        var productImages = (productImageDictionary as Dictionary<long, ProductImage>);
+                        var productImage = productImages[lineItem.Id.Value] as ProductImage;
+                        <img width="80" class="img" src="@productImage.Src">
+                    }
+                }
+                @*{ if (lineItem.ProductImages != null) { ShopifyProductImage productImage = lineItem.ProductImages.First();
                 <img width="80" class="img" src="@productImage.Src" alt="@productImage.Alt"> } }
+                *@
             </div>
-            <div class="col-md-3"><span class="text-info">@lineItem.Title</span><br><small>SKU: @lineItem.Sku</small></div>
+            <div class="col-md-3"><span class="text-info">@lineItem.Title</span><br><small>SKU: @lineItem.SKU</small></div>
             <div class="col-md-2">@lineItem.VariantTitle</div>
             <div class="col-md-2">
-                @if (order.Fulfillments != null) { @foreach(ShopifyOrderFulfillment fulfillment in order.Fulfillments) {
+                @if (order.Fulfillments != null) { @foreach(Fulfillment fulfillment in order.Fulfillments) {
                 <a target="_blank" href="@fulfillment.TrackingUrl">@fulfillment.TrackingNumber</a> } }
             </div>
             <div class="col-md-1">
