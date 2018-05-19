@@ -4,8 +4,9 @@ using CsvHelper.Configuration;
 
 namespace WazaloOrdering.Client.Models
 {
-    public class PurchaseOrder
+    public class PurchaseOrderLineItem
     {
+        public long ID { get; set; }
         public string OrderID { get; set; }
         public string SKU { get; set; }
         public int Quantity { get; set; }
@@ -24,9 +25,9 @@ namespace WazaloOrdering.Client.Models
         public string BuyerEmail { get; set; }
     }
 
-    public class PurchaseOrderMap : ClassMap<PurchaseOrder>
+    public class PurchaseOrderLineItemMap : ClassMap<PurchaseOrderLineItem>
     {
-        public PurchaseOrderMap()
+        public PurchaseOrderLineItemMap()
         {
             Map(m => m.OrderID).Name("Order ID");
             Map(m => m.SKU).Name("SKU");

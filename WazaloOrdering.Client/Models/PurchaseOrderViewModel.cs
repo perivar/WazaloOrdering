@@ -20,6 +20,6 @@ namespace WazaloOrdering.Client.Models
         [Display(Name = "Body")]
         public string EmailBody { get; set; }
 
-        public List<PurchaseOrder> PurchaseOrders { get; set; }
+        public List<PurchaseOrderLineItem> PurchaseOrderLineItems { get; set; }
     }
 }

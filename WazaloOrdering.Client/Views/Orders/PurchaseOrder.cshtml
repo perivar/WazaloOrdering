@@ -1,60 +1,36 @@
 @model PurchaseOrderViewModel 
-@{
-    ViewData["Title"] = "Purchase Order";
-    var orders = @Model.PurchaseOrders;
+@{ 
+    ViewData["Title"] = "Purchase Order"; 
 }
 
 <h2>Aiminyz - Purchase Order from Wazalo.com</h2>
-<br>
-<form asp-controller="Orders" asp-action="PurchaseOrder" method="post">
-<table class="table table-bordered table-hover table-sm">
-  <thead class="thead-light">
-      <tr>
-        <th scope="col">Order ID</th>
-        <th scope="col">SKU</th>
-        <th scope="col">Quantity</th>
-        <th scope="col">Price (USD)</th>
-        <th scope="col">Name</th>
-        <th scope="col">Address 1</th>
-        <th scope="col">City</th>
-        <th scope="col">Country</th>
-        <th scope="col">Zip Code</th>
-        <th scope="col">Telephone</th>
-        <th scope="col">Remarks</th>
-      </tr>
-  </thead>
-  <tbody>
-    @foreach(PurchaseOrder order in orders) {
-        <tr>
-            <td>@order.OrderID</td>
-            <td>@order.SKU</td>
-            <td>@order.Quantity</td>
-            <td>@order.PriceUSD</td>
-            <td>@order.Name</td>
-            <td>@order.Address1</td>
-            <td>@order.City</td>
-            <td>@order.Country</td>
-            <td>@order.ZipCode</td>
-            <td>@order.Telephone</td>
-            <td>@order.Remarks</td>
-        </tr>
-        }
-  </tbody>
-</table>
 
-<div class="form-group">
-    <input asp-for="OrderId" type="hidden">
-    <label asp-for="EmailTo"></label>
-    <input asp-for="EmailTo" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
-    <label asp-for="EmailCC"></label>
-    <input asp-for="EmailCC" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <table id="grid"></table>
+        </div>
+    </div>
+    <div class="row mt-4"></div>
+    <div class="row">
+        <div class="col-12">
+            <form asp-controller="Orders" asp-action="PurchaseOrder" method="post">
+                <div class="form-group">
+                    <input asp-for="OrderId" type="hidden">
+                    <label asp-for="EmailTo"></label>
+                    <input asp-for="EmailTo" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
+                    <label asp-for="EmailCC"></label>
+                    <input asp-for="EmailCC" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
+                </div>
+                <div class="form-group">
+                    <label asp-for="EmailBody">Email Body:</label>
+                    <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
 </div>
-<div class="form-group">
-    <label asp-for="EmailBody">Email Body:</label>
-    <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
-</div>
-<button type="submit" class="btn btn-primary">Submit</button>
-</form>
 
 <br>
 <br>
@@ -67,17 +43,101 @@
 <a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
 <br>
 <br>
-<br>
-<br>
-<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a>
+<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a> 
 
-@section Scripts { 
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#EmailBody").editor({
-                uiLibrary: 'bootstrap4',
-                height: 380
+@section Scripts {
+<script type="text/javascript">
+    $(document).ready(function() {
+        var grid, editManager;
+
+        editManager = function(value, record, $cell, $displayEl, id, $grid) {
+            var data = $grid.data(),
+                $edit = $('<a class="btn btn-light btn-sm" href="#"><i class="fas fa-pencil-alt"></i></a>').attr('data-key', id),
+                $delete = $('<a class="btn btn-light btn-sm" href="#"><i class="fas fa-trash-alt"></i></a>').attr('data-key', id),
+                $update = $('<a class="btn btn-success btn-sm" href="#"><i class="fas fa-check"></i></a>').attr('data-key', id).hide(),
+                $cancel = $('<a class="btn btn-danger btn-sm" href="#"><i class="fas fa-times"></i></a>').attr('data-key', id).hide();
+
+            $edit.on('click', function(e) {
+                $grid.edit($(this).data('key'));
+                $edit.hide();
+                $delete.hide();
+                $update.show();
+                $cancel.show();
             });
+
+            $delete.on('click', function(e) {
+                $grid.removeRow($(this).data('key'));
+            });
+
+            $update.on('click', function(e) {
+                $grid.update($(this).data('key'));
+                $edit.show();
+                $delete.show();
+                $update.hide();
+                $cancel.hide();
+            });
+
+            $cancel.on('click', function(e) {
+                $grid.cancel($(this).data('key'));
+                $edit.show();
+                $delete.show();
+                $update.hide();
+                $cancel.hide();
+            });
+
+            $displayEl.empty().append($edit).append($delete).append($update).append($cancel);
+        }
+
+        grid = $('#grid').grid({
+            dataSource: '/Orders/Get/@Model.OrderId',
+            primaryKey: 'sku',
+            uiLibrary: 'bootstrap4',
+            inlineEditing: { mode: 'command', managementColumn: false },
+            columns: [
+                { field: 'id', hidden: true },
+                { field: 'orderID', title: 'Order ID', sortable: true, width: 100 },
+                { field: 'sku', title: 'SKU', sortable: true, width: 130, editor: true },
+                { field: 'quantity', title: 'Quantity', editor: true },
+                { field: 'priceUSD', title: 'Price USD', editor: true },
+                { field: 'name', title: 'Name', sortable: true },
+                { field: 'address1', title: 'Address 1' },
+                { field: 'city', title: 'City' },
+                { field: 'country', title: 'Country' },
+                { field: 'zipCode', title: 'Zip Code' },
+                { field: 'telephone', title: 'Telephone' },
+                { field: 'remarks', title: 'Remarks', editor: true },
+                { width: 100, align: 'center', renderer: editManager }
+            ],
+            pager: {
+                limit: 5
+            }
         });
-    </script>
+        grid.on('rowDataChanged', function (e, id, record) {
+            // Clone the record in new object where you can format the data to format that is supported by the backend.
+            var data = $.extend(true, {}, record);
+            // Post the data to the server
+            $.ajax({ url: '/Orders/Save/@Model.OrderId', data: { record: data }, method: 'POST' })
+                .fail(function () {
+                    alert('Failed to save.');
+                });
+        });
+        grid.on('rowRemoving', function (e, $row, id, record) {            
+            if (confirm('Are you sure?')) {
+                $.ajax({ url: '/Orders/Delete/@Model.OrderId', data: { id: id }, method: 'POST' })
+                    .done(function () {
+                        grid.reload();
+                    })
+                    .fail(function () {
+                        alert('Failed to delete.');
+                    });
+            }
+        });        
+
+        $("#EmailBody").editor({
+            uiLibrary: 'bootstrap4',
+            height: 380
+        });
+
+    });
+</script>
 }
