@@ -6,6 +6,9 @@
 
 <h2>Order: @ViewData["id"]</h2>
 
+<div class="container">
+    <div class="row align-items-center mt-3">
+        <div class="col-md-12">
 @await Html.PartialAsync(
     "OrderPartial",
     Model,
@@ -13,6 +16,9 @@
         { "orderPage", true }
     }
 )
+        </div>
+    </div>
+</div>
 
  @section Scripts { 
  <script type="text/javascript">

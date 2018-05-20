@@ -8,7 +8,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <table id="grid"></table>
+            <table id="grid" class="table table-bordered table-hover table-sm"></table>
         </div>
     </div>
     <div class="row mt-4"></div>
@@ -92,20 +92,25 @@
             dataSource: '/Orders/Get/@Model.OrderId',
             primaryKey: 'id',
             uiLibrary: 'bootstrap4',
+            fontSize: '14px',
             inlineEditing: { mode: 'command', managementColumn: false },
+            detailTemplate: '<div></div>',
+            responsive: true,
+            resizableColumns: true,
+            showHiddenColumnsAsDetails: true,
             columns: [
-                { field: 'id', hidden: true },
-                { field: 'orderID', title: 'Order ID', sortable: true, width: 100 },
-                { field: 'sku', title: 'SKU', sortable: true, width: 130, editor: true },
-                { field: 'quantity', title: 'Quantity', editor: true },
-                { field: 'priceUSD', title: 'Price USD', editor: true },
-                { field: 'name', title: 'Name', sortable: true },
-                { field: 'address1', title: 'Address 1' },
-                { field: 'city', title: 'City' },
-                { field: 'country', title: 'Country' },
-                { field: 'zipCode', title: 'Zip Code' },
-                { field: 'telephone', title: 'Telephone' },
-                { field: 'remarks', title: 'Remarks', editor: true },
+                { field: 'id', hidden: true, priority: 100 },
+                { field: 'orderID', title: 'Order ID', sortable: true, minWidth: 80, priority: 4 },
+                { field: 'sku', title: 'SKU', sortable: true, editor: true, width: 200, priority: 1 },
+                { field: 'quantity', title: 'Quantity', editor: true, minWidth: 80, priority: 2 },
+                { field: 'priceUSD', title: 'Price USD', editor: true, minWidth: 80, priority: 3 },
+                { field: 'name', title: 'Name', sortable: true, minWidth: 120, priority: 5},
+                { field: 'address1', title: 'Address 1', minWidth: 150, priority: 6 },
+                { field: 'city', title: 'City', minWidth: 80, priority: 7 },
+                { field: 'country', title: 'Country', minWidth: 80, priority: 10 },
+                { field: 'zipCode', title: 'Zip Code', minWidth: 80, priority: 8 },
+                { field: 'telephone', title: 'Telephone', minWidth: 80, priority: 9 },
+                { field: 'remarks', title: 'Remarks', width: 120, editor: true, priority: 2 },
                 { width: 100, align: 'center', renderer: editManager }
             ],
             pager: {
@@ -113,8 +118,10 @@
             }
         });
         grid.on('rowDataChanged', function (e, id, record) {
-            // Post the data to the server
             $.ajax({ url: '/Orders/Save/@Model.OrderId', data: { record: record }, method: 'POST' })
+                .done(function () {
+                    grid.reload();
+                })
                 .fail(function () {
                     alert('Failed to save.');
                 });
