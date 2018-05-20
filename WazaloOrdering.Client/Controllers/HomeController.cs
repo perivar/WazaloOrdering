@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using WazaloOrdering.Client.Models;
@@ -18,7 +19,11 @@ namespace WazaloOrdering.Client.Controllers
     public class HomeController : Controller
     {
         private readonly IConfiguration appConfig;
-        
+
+        const string SessionKeyName = "_Name";
+        const string SessionKeyFY = "_FY";
+        const string SessionKeyDate = "_Date";
+
         public HomeController(IConfiguration configuration)
         {
             appConfig = configuration;
@@ -27,18 +32,21 @@ namespace WazaloOrdering.Client.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            var date = new Date();
-            DateTime from = date.CurrentDate.AddDays(-14);
-            DateTime to = date.CurrentDate;
-            ViewData["dateStart"] = from.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            ViewData["dateEnd"] = to.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            HttpContext.Session.SetString(SessionKeyName, "Per Ivar Nerseth");
+            HttpContext.Session.SetInt32(SessionKeyFY, 2018);
+            HttpContext.Session.Set<DateTime>(SessionKeyDate, DateTime.Now);
+
             return View();
         }
 
         [AllowAnonymous]
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            ViewBag.Name = HttpContext.Session.GetString(SessionKeyName);
+            ViewBag.FY = HttpContext.Session.GetInt32(SessionKeyFY);
+            ViewBag.Date = HttpContext.Session.Get<DateTime>(SessionKeyDate);
+
+            ViewData["Message"] = "Session State In Asp.Net Core 2.0";
 
             return View();
         }

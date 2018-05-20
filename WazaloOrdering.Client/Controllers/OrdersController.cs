@@ -22,6 +22,8 @@ namespace WazaloOrdering.Client.Controllers
     public class OrdersController : Controller
     {
         private readonly IConfiguration appConfig;
+        const string SessionKeyPurchaseOrderLineItems = "_PurchaseOrderLineItems";
+
         public OrdersController(IConfiguration configuration)
         {
             appConfig = configuration;
@@ -157,11 +159,17 @@ namespace WazaloOrdering.Client.Controllers
             List<PurchaseOrderLineItem> records;
             int total;
 
-            // Get the list from the session; if it doesn't exist, create a new one:           
-            //List<PurchaseOrder> purchaseOrders = HttpContext.Session.GetObjectFromJson<List<PurchaseOrder>>("PurchaseOrders") ?? new List<PurchaseOrder>();
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, id);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
 
-            var order = DataFactory.GetShopifyOrder(appConfig, id);
-            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+                // and store it in the session
+                HttpContext.Session.Set<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems, purchaseOrderLineItems);
+            }
 
             // project a sequence into a new sequence which may or may not be different types and/or values.
             // select the fields required into a new list
@@ -258,9 +266,14 @@ namespace WazaloOrdering.Client.Controllers
         [HttpPost]
         public JsonResult Save(PurchaseOrderLineItem record, long id)
         {
-
-            var order = DataFactory.GetShopifyOrder(appConfig, id);
-            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, id);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
 
             PurchaseOrderLineItem entity;
             if (record.ID > 0)
@@ -296,7 +309,9 @@ namespace WazaloOrdering.Client.Controllers
                     Remarks = record.Remarks
                 });
             }
-            //SaveChanges();
+
+            // and store it in the session
+            HttpContext.Session.Set<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems, purchaseOrderLineItems);
 
             return Json(new { result = true });
         }
@@ -305,12 +320,20 @@ namespace WazaloOrdering.Client.Controllers
         [HttpPost]
         public JsonResult Delete(long id)
         {
-            var order = DataFactory.GetShopifyOrder(appConfig, id);
-            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, id);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
 
             PurchaseOrderLineItem entity = purchaseOrderLineItems.First(p => p.ID == id);
             purchaseOrderLineItems.Remove(entity);
-            //SaveChanges();
+
+            // and store it in the session
+            HttpContext.Session.Set<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems, purchaseOrderLineItems);
 
             return Json(new { result = true });
         }

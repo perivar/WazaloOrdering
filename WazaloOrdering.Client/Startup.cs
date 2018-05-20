@@ -28,7 +28,7 @@ namespace WazaloOrdering.Client
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             }).AddCookie(options => { options.LoginPath = "/Home/Login"; });
-            
+
             services.AddMvc().AddRazorPagesOptions(options =>
             {
                 options.Conventions.AuthorizeFolder("/");
@@ -38,11 +38,25 @@ namespace WazaloOrdering.Client
             // An IConfiguration instance will be added to the services container by default in ASP.NET Core 2.0, 
             // so that all applications can easily retrieve configuration values via the container
             //services.AddSingleton<IConfiguration>(Configuration);
+
+            // Adds a default in-memory implementation of IDistributedCache.
+            services.AddDistributedMemoryCache();
+
+            // Enable session storage
+            /*
+            services.AddSession(options =>
+            {
+                // Set a short timeout for easy testing.
+                options.IdleTimeout = TimeSpan.FromSeconds(10);
+            });
+             */
+            services.AddSession();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            // define exception page
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -52,16 +66,18 @@ namespace WazaloOrdering.Client
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            // serve static files in the wwwroot folder
             app.UseStaticFiles();
 
+            // enable authentication
             app.UseAuthentication();
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-            });
+            // IMPORTANT: This session call MUST go before UseMvc()
+            app.UseSession();
+
+            // the efault route is sufficient
+            // {controller=Home}/{action=Index}/{id?}
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

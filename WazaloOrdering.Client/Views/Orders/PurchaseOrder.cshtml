@@ -52,10 +52,10 @@
 
         editManager = function(value, record, $cell, $displayEl, id, $grid) {
             var data = $grid.data(),
-                $edit = $('<a class="btn btn-light btn-sm" href="#"><i class="fas fa-pencil-alt"></i></a>').attr('data-key', id),
-                $delete = $('<a class="btn btn-light btn-sm" href="#"><i class="fas fa-trash-alt"></i></a>').attr('data-key', id),
-                $update = $('<a class="btn btn-success btn-sm" href="#"><i class="fas fa-check"></i></a>').attr('data-key', id).hide(),
-                $cancel = $('<a class="btn btn-danger btn-sm" href="#"><i class="fas fa-times"></i></a>').attr('data-key', id).hide();
+                $edit = $('<button class="btn btn-light btn-sm"><i class="fas fa-pencil-alt"></i></button>').attr('data-key', id),
+                $delete = $('<button class="btn btn-light btn-sm"><i class="fas fa-trash-alt"></i></button>').attr('data-key', id),
+                $update = $('<button class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>').attr('data-key', id).hide(),
+                $cancel = $('<button class="btn btn-danger btn-sm"><i class="fas fa-times"></i></button>').attr('data-key', id).hide();
 
             $edit.on('click', function(e) {
                 $grid.edit($(this).data('key'));
@@ -90,7 +90,7 @@
 
         grid = $('#grid').grid({
             dataSource: '/Orders/Get/@Model.OrderId',
-            primaryKey: 'sku',
+            primaryKey: 'id',
             uiLibrary: 'bootstrap4',
             inlineEditing: { mode: 'command', managementColumn: false },
             columns: [
@@ -113,10 +113,8 @@
             }
         });
         grid.on('rowDataChanged', function (e, id, record) {
-            // Clone the record in new object where you can format the data to format that is supported by the backend.
-            var data = $.extend(true, {}, record);
             // Post the data to the server
-            $.ajax({ url: '/Orders/Save/@Model.OrderId', data: { record: data }, method: 'POST' })
+            $.ajax({ url: '/Orders/Save/@Model.OrderId', data: { record: record }, method: 'POST' })
                 .fail(function () {
                     alert('Failed to save.');
                 });
