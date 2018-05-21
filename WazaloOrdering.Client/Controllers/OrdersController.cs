@@ -146,6 +146,12 @@ namespace WazaloOrdering.Client.Controllers
             return View(model);
         }
 
+        public ActionResult FulfillmentModal(long Id)
+        {
+            ViewBag.Id = Id;
+            return PartialView("FulfillmentModal");
+        }
+
         // GET: /Orders/MailPurchaseOrder/123134
         [Authorize]
         [HttpGet]
@@ -513,7 +519,7 @@ namespace WazaloOrdering.Client.Controllers
 
             if (financialStatusId == null)
             {
-                model.FinancialStatusId = "any";
+                model.FinancialStatusId = "paid";
             }
             else
             {

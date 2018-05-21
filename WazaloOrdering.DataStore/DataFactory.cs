@@ -45,5 +45,53 @@ namespace WazaloOrdering.DataStore
             }
         }
 
+        public static Order SetOrderNoteAttributes(IConfiguration appConfig, long orderId, Dictionary<string, string> dic)
+        {
+            try
+            {
+                return Shopify.SetOrderNoteAttributes(appConfig, orderId, dic).GetAwaiter().GetResult();
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        public static Order SetOrderNoteAttributes(IConfiguration appConfig, long orderId, IEnumerable<NoteAttribute> noteAttributes)
+        {
+            try
+            {
+                return Shopify.SetOrderNoteAttributes(appConfig, orderId, noteAttributes).GetAwaiter().GetResult();
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        public static Fulfillment FulfillOrder(IConfiguration appConfig, long orderId, string trackingNumber, bool notifyCustomer)
+        {
+            try
+            {
+                return Shopify.FulfillOrder(appConfig, orderId, trackingNumber, notifyCustomer).GetAwaiter().GetResult();
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        public static Fulfillment FulfillOrderPartially(IConfiguration appConfig, long orderId, long lineItemId, int lineItemQuantity, string trackingNumber, bool notifyCustomer)
+        {
+            try
+            {
+                return Shopify.FulfillOrderPartially(appConfig, orderId, lineItemId, lineItemQuantity, trackingNumber, notifyCustomer).GetAwaiter().GetResult();
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
     }
 }

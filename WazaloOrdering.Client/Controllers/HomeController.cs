@@ -36,7 +36,8 @@ namespace WazaloOrdering.Client.Controllers
             HttpContext.Session.SetInt32(SessionKeyFY, 2018);
             HttpContext.Session.Set<DateTime>(SessionKeyDate, DateTime.Now);
 
-            return View();
+            //return View();
+            return Redirect("~/Orders");
         }
 
         [AllowAnonymous]
@@ -46,7 +47,7 @@ namespace WazaloOrdering.Client.Controllers
             ViewBag.FY = HttpContext.Session.GetInt32(SessionKeyFY);
             ViewBag.Date = HttpContext.Session.Get<DateTime>(SessionKeyDate);
 
-            ViewData["Message"] = "Session State In Asp.Net Core 2.0";
+            ViewData["Message"] = "Stored Session State";
 
             return View();
         }

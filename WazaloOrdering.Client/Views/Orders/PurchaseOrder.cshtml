@@ -4,15 +4,33 @@
 }
 
 <h2>Purchase Order from Wazalo to Aiminyz</h2>
-
-<h3>Step 1. Pay on Paypal</h3>
-<h4>Send Money to master@aiminyz.com</h4>
-<a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
-<br>
-<br>
-<h2>Step 2. Send Email with Purchase Order</h2>
-@*
-<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
+            
+<div class="container">
+    <div class="row justify-content-start mt-3">
+        <div class="col-md-6">
+            <h3>Step 1. Pay using Paypal</h3>
+        </div>
+        <div class="col-md-6">
+            <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
+        </div>        
+    </div>
+    <div class="row justify-content-start mt-3">
+        <div class="col-md-12">
+            Use <mark>Send Money</mark> for <mark>Goods and Services</mark> to <code>master@aiminyz.com</code>
+        </div>
+    </div>
+    <div class="row justify-content-start mt-3">
+        <div class="col-md-12">
+            With a note: <code>Purchase Order: @Model.OrderName</code>
+        </div>        
+    </div>
+    <div class="row justify-content-start mt-3">
+        <div class="col-md-12">
+            <h3>Step 2. Check and optionally edit the line items</h3>
+        </div>
+    </div>
+</div>  
+@*<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
 <br>
 <br>
 <a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a> 
@@ -23,8 +41,15 @@
             <table id="grid" class="table table-bordered table-hover table-sm"></table>
         </div>
     </div>
-    <div class="row mt-4"></div>
-    <div class="row">
+</div>
+
+<div class="container">
+    <div class="row justify-content-start mt-4">
+        <div class="col-md-12">
+            <h3>(Optional) Step 3. Change the email</h3>
+        </div>
+    </div>
+    <div class="row justify-content-start">
         <div class="col-12">
             <form method="post">
                 <div class="form-group">
@@ -39,14 +64,27 @@
                     <label asp-for="EmailBody">Email Body:</label>
                     <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
                 </div>
-
-                <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
-                <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-primary">Export Purchase Order</button>
             </form>
         </div>
     </div>
+    <div class="row justify-content-start mt-4">
+        <div class="col-md-6">
+            <h3>Step 4. Send the email</h3>
+        </div>
+        <div class="col-md-6">
+            <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
+        </div>
+    </div>
+    <div class="row justify-content-start mt-4">
+        <div class="col-md-6">
+            <strong>(Optional)</strong> Export the purhase order line items and send email manually
+        </div>
+        <div class="col-md-6">
+            <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-warning btn-sm">Export Purchase Order</button>
+        </div>
+    </div>
 </div>
-
+                
 @section Scripts {
 <script type="text/javascript">
     $(document).ready(function() {

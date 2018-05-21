@@ -75,5 +75,74 @@ namespace WazaloOrdering.DataStore
             return await service.ListAsync(productId);
         }
 
+        public static async Task<Order> SetOrderNoteAttributes(IConfiguration appConfig, long orderId, Dictionary<string, string> dic)
+        {
+            List<NoteAttribute> noteAttributes = dic.Select(p => new NoteAttribute { Name = p.Key, Value = p.Value }).ToList();
+            return await SetOrderNoteAttributes(appConfig, orderId, noteAttributes);
+        }
+
+        public static async Task<Order> SetOrderNoteAttributes(IConfiguration appConfig, long orderId, IEnumerable<NoteAttribute> noteAttributes)
+        {
+            // get shopify configuration parameters
+            var config = new MyConfiguration(appConfig);
+            string shopifyDomain = config.GetString("ShopifyDomain");
+            string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
+
+            var service = new OrderService(shopifyDomain, shopifyAPIPassword);
+            var order = await service.UpdateAsync(orderId, new Order()
+            {
+                NoteAttributes = noteAttributes
+            });
+
+            return order;
+        }
+
+        public static async Task<Fulfillment> FulfillOrder(IConfiguration appConfig, long orderId, string trackingNumber, bool notifyCustomer)
+        {
+            // get shopify configuration parameters
+            var config = new MyConfiguration(appConfig);
+            string shopifyDomain = config.GetString("ShopifyDomain");
+            string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
+
+            var service = new FulfillmentService(shopifyDomain, shopifyAPIPassword);
+            var fulfillment = new Fulfillment()
+            {
+                TrackingCompany = "Posten",
+                TrackingUrl = $"https://sporing.posten.no/sporing.html?q={trackingNumber}",
+                TrackingNumber = trackingNumber
+            };
+
+            fulfillment = await service.CreateAsync(orderId, fulfillment, notifyCustomer);
+            return fulfillment;
+        }
+
+        public static async Task<Fulfillment> FulfillOrderPartially(IConfiguration appConfig, long orderId, long lineItemId, int lineItemQuantity, string trackingNumber, bool notifyCustomer)
+        {
+            // get shopify configuration parameters
+            var config = new MyConfiguration(appConfig);
+            string shopifyDomain = config.GetString("ShopifyDomain");
+            string shopifyAPIPassword = config.GetString("ShopifyAPIPassword");
+
+            var service = new FulfillmentService(shopifyDomain, shopifyAPIPassword);
+
+            var fulfillment = new Fulfillment()
+            {
+                TrackingCompany = "Posten",
+                TrackingUrl = $"https://sporing.posten.no/sporing.html?q={trackingNumber}",
+                TrackingNumber = trackingNumber,
+                LineItems = new List<LineItem>()
+                {
+                    new LineItem()
+                    {
+                        Id = lineItemId,
+                        Quantity = lineItemQuantity
+                    }
+                }
+            };
+
+            fulfillment = await service.CreateAsync(orderId, fulfillment, notifyCustomer);
+            return fulfillment;
+        }
+
     }
 }
