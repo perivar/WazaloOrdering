@@ -145,7 +145,7 @@ namespace WazaloOrdering.DataStore
             {
                 mail.From = new MailAddress(emailUserName, emailDisplayName);
                 mail.To.Add(to);
-                if (cc != null && "" != cc) mail.CC.Add(cc);
+                if (!string.IsNullOrEmpty(cc)) mail.CC.Add(cc);
 
                 mail.Subject = subject;
                 mail.Body = body;
@@ -188,6 +188,9 @@ namespace WazaloOrdering.DataStore
         {
             return AbsoluteStart(dateTime).AddDays(1).AddTicks(-1);
         }
+
+        // Extension method to ensure check whether a list is null or empty
+        public static bool IsNullOrEmpty<T>(this IEnumerable<T> me) => !me?.Any() ?? true;
     }
 
     public class FileDate

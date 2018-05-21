@@ -98,6 +98,9 @@ namespace WazaloOrdering.Client.Controllers
             long orderId = long.Parse(id);
             var order = DataFactory.GetShopifyOrder(appConfig, orderId);
 
+            // reset session order
+            HttpContext.Session.Set<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems, null);
+
             ViewData["id"] = id;
             return View(order);
         }
@@ -116,11 +119,12 @@ namespace WazaloOrdering.Client.Controllers
         // GET: /Orders/PurchaseOrder/123134
         [Authorize]
         [HttpGet]
-        public IActionResult PurchaseOrder(string id)
+        public IActionResult PurchaseOrder(long id)
         {
-            long orderId = long.Parse(id);
-            var order = DataFactory.GetShopifyOrder(appConfig, orderId);
+            var order = DataFactory.GetShopifyOrder(appConfig, id);
             var purchaseOrders = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+
+            // TODO: Due to the grid using ajax rest calls, it shouldn't be neccesary to load the order at all her
 
             var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
             var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
@@ -131,7 +135,8 @@ namespace WazaloOrdering.Client.Controllers
 
             var model = new PurchaseOrderViewModel()
             {
-                OrderId = orderId,
+                OrderId = id,
+                OrderName = order.Name,
                 EmailTo = purchaseOrderEmailTo,
                 EmailCC = purchaseOrderEmailCC,
                 EmailBody = emailNote,
@@ -141,14 +146,157 @@ namespace WazaloOrdering.Client.Controllers
             return View(model);
         }
 
+        // GET: /Orders/MailPurchaseOrder/123134
+        [Authorize]
+        [HttpGet]
+        public IActionResult MailPurchaseOrder(long id)
+        {
+            var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
+            var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
+
+            // read multiline string from jsong config file
+            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
+            var emailNote = string.Join("\n", purchaseOrderEmailNote);
+
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, id);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
+
+            string orderName = purchaseOrderLineItems.FirstOrDefault().OrderID;
+            var model = new PurchaseOrderViewModel()
+            {
+                OrderId = id,
+                OrderName = orderName,
+                EmailTo = purchaseOrderEmailTo,
+                EmailCC = purchaseOrderEmailCC,
+                EmailBody = emailNote,
+                PurchaseOrderLineItems = purchaseOrderLineItems
+            };
+
+            return MailPurchaseOrderAction(model);
+        }
+
+        // POST: /Orders/MailPurchaseOrder
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult PurchaseOrder(PurchaseOrderViewModel model)
+        public IActionResult MailPurchaseOrder(PurchaseOrderViewModel model)
         {
-            return Content($"{model.EmailTo}\n{model.EmailCC}\n{model.EmailBody}");
+            if (!ModelState.IsValid)
+            {
+                // failed
+                return Content($" Model State is Invalid: {model.EmailTo}\n{model.EmailCC}\n{model.EmailBody}");
+            }
+
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, model.OrderId);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
+            model.PurchaseOrderLineItems = purchaseOrderLineItems;
+
+            return MailPurchaseOrderAction(model);
         }
 
+        // private action method that sends mail with attachment using the passed model
+        private IActionResult MailPurchaseOrderAction(PurchaseOrderViewModel model)
+        {
+            if (model.EmailTo == null || model.EmailBody == null || model.PurchaseOrderLineItems == null)
+                return Content("Missing To address, the email body text or the purchase order line items!");
+
+            // Deserialize model here 
+            var result = Utils.WriteCsvToMemory(model.PurchaseOrderLineItems, typeof(PurchaseOrderLineItemMap));
+            var memoryStream = new MemoryStream(result);
+            byte[] bytes = memoryStream.ToArray();
+            memoryStream.Close();
+
+            try
+            {
+                string orderName = model.OrderName;
+                string to = model.EmailTo;
+                string cc = model.EmailCC;
+                string subject = string.Format("Purchase Order {0}", orderName);
+                string body = model.EmailBody;
+                string fileDownloadName = GetFileDownloadName(orderName);
+
+                Utils.SendMailWithAttachment(appConfig, subject, body, to, cc, fileDownloadName, bytes);
+
+                ViewData["emailSent"] = true;
+                ViewData["to"] = to;
+            }
+            catch (System.Exception e)
+            {
+                ViewData["emailSent"] = false;
+                ViewData["errorMessage"] = e.ToString();
+            }
+
+            ViewData["id"] = model.OrderId;
+            return View("MailPurchaseOrder");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public FileStreamResult ExportPurchaseOrder(long id)
+        {
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, id);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
+
+            return ExportPurchaseOrderAction(purchaseOrderLineItems);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public FileStreamResult ExportPurchaseOrder(PurchaseOrderViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // failed
+                return null;
+            }
+
+            // try to get the line item list from the session
+            List<PurchaseOrderLineItem> purchaseOrderLineItems = null;
+            if ((purchaseOrderLineItems = HttpContext.Session.Get<List<PurchaseOrderLineItem>>(SessionKeyPurchaseOrderLineItems)) == null)
+            {
+                // if not found, look it up
+                var order = DataFactory.GetShopifyOrder(appConfig, model.OrderId);
+                purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            }
+
+            return ExportPurchaseOrderAction(purchaseOrderLineItems);
+        }
+
+        // private action method that exports csv using the passed model
+        private FileStreamResult ExportPurchaseOrderAction(List<PurchaseOrderLineItem> purchaseOrderLineItems)
+        {
+            if (purchaseOrderLineItems.IsNullOrEmpty())
+                return null;
+
+            // Deserialize model here 
+            var result = Utils.WriteCsvToMemory(purchaseOrderLineItems, typeof(PurchaseOrderLineItemMap));
+            var memoryStream = new MemoryStream(result);
+
+            string orderName = purchaseOrderLineItems.FirstOrDefault().OrderID;
+            string fileDownloadName = GetFileDownloadName(orderName);
+            return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
+        }
+
+        #region GIJGO Editor
         // A Json Method to support gijgo grid
         // It requires int? page, int? limit, string sortBy, string direction, long id
         // pluss variables used for filtering on fields
@@ -337,73 +485,12 @@ namespace WazaloOrdering.Client.Controllers
 
             return Json(new { result = true });
         }
+        #endregion        
 
-        [Authorize]
-        [HttpGet]
-        public FileStreamResult ExportPurchaseOrder(string id)
-        {
-            long orderId = long.Parse(id);
-            var order = DataFactory.GetShopifyOrder(appConfig, orderId);
-            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
-
-            // Deserialize model here 
-            var result = Utils.WriteCsvToMemory(purchaseOrderLineItems, typeof(PurchaseOrderLineItemMap));
-            var memoryStream = new MemoryStream(result);
-
-            string fileDownloadName = GetFileDownloadName(order);
-            return new FileStreamResult(memoryStream, "text/csv") { FileDownloadName = fileDownloadName };
-        }
-
-        [Authorize]
-        [HttpGet]
-        public IActionResult MailPurchaseOrder(string id)
-        {
-            var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
-            var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
-
-            // read multiline string from jsong config file
-            var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
-            var emailNote = string.Join("\n", purchaseOrderEmailNote);
-
-            if (purchaseOrderEmailTo == null || purchaseOrderEmailNote == null)
-                return Content("Missing to address or email note!");
-
-            long orderId = long.Parse(id);
-            var order = DataFactory.GetShopifyOrder(appConfig, orderId);
-            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
-
-            // Deserialize model here 
-            var result = Utils.WriteCsvToMemory(purchaseOrderLineItems, typeof(PurchaseOrderLineItemMap));
-            var memoryStream = new MemoryStream(result);
-            byte[] bytes = memoryStream.ToArray();
-            memoryStream.Close();
-
-            try
-            {
-                string to = purchaseOrderEmailTo;
-                string cc = purchaseOrderEmailCC;
-                string subject = string.Format("Purchase Order {0}", order.Name);
-                string body = emailNote;
-                string fileDownloadName = GetFileDownloadName(order);
-
-                Utils.SendMailWithAttachment(appConfig, subject, body, to, cc, fileDownloadName, bytes);
-                ViewData["emailSent"] = true;
-                ViewData["to"] = to;
-            }
-            catch (System.Exception e)
-            {
-                ViewData["emailSent"] = false;
-                ViewData["errorMessage"] = e.ToString();
-            }
-
-            ViewData["id"] = id;
-            return View(purchaseOrderLineItems);
-        }
-
-        private static string GetFileDownloadName(Order order)
+        private static string GetFileDownloadName(string orderName)
         {
             // remove all non digit characters from the order id (#2020 => 2020)
-            var orderId = Regex.Replace(order.Name, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
+            var orderId = Regex.Replace(orderName, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
             string fileDownloadName = string.Format("wazalo_purchaseorder_{0}.csv", orderId);
             return fileDownloadName;
         }

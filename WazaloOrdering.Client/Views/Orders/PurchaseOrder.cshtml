@@ -3,7 +3,18 @@
     ViewData["Title"] = "Purchase Order"; 
 }
 
-<h2>Aiminyz - Purchase Order from Wazalo.com</h2>
+<h2>Purchase Order from Wazalo to Aiminyz</h2>
+
+<h3>Step 1. Pay on Paypal</h3>
+<h4>Send Money to master@aiminyz.com</h4>
+<a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
+<br>
+<br>
+<h2>Step 2. Send Email with Purchase Order</h2>
+<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
+<br>
+<br>
+<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a> 
 
 <div class="container-fluid">
     <div class="row">
@@ -14,9 +25,10 @@
     <div class="row mt-4"></div>
     <div class="row">
         <div class="col-12">
-            <form asp-controller="Orders" asp-action="PurchaseOrder" method="post">
+            <form method="post">
                 <div class="form-group">
                     <input asp-for="OrderId" type="hidden">
+                    <input asp-for="OrderName" type="hidden">
                     <label asp-for="EmailTo"></label>
                     <input asp-for="EmailTo" type="email" class="form-control form-control-sm" placeholder="mail@example.com">
                     <label asp-for="EmailCC"></label>
@@ -26,24 +38,13 @@
                     <label asp-for="EmailBody">Email Body:</label>
                     <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+
+                <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
+                <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-primary">Export Purchase Order</button>
             </form>
         </div>
     </div>
 </div>
-
-<br>
-<br>
-<h1>Step 1. Pay on Paypal</h1>
-<h2>Send Money to master@aiminyz.com</h2>
-<a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
-<br>
-<br>
-<h1>Step 2. Send Email with Purchase Order</h1>
-<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
-<br>
-<br>
-<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a> 
 
 @section Scripts {
 <script type="text/javascript">
@@ -101,16 +102,16 @@
             columns: [
                 { field: 'id', hidden: true, priority: 100 },
                 { field: 'orderID', title: 'Order ID', sortable: true, minWidth: 80, priority: 4 },
-                { field: 'sku', title: 'SKU', sortable: true, editor: true, width: 200, priority: 1 },
+                { field: 'sku', title: 'SKU', sortable: true, editor: true, minWidth: 80, priority: 1 },
                 { field: 'quantity', title: 'Quantity', editor: true, minWidth: 80, priority: 2 },
                 { field: 'priceUSD', title: 'Price USD', editor: true, minWidth: 80, priority: 3 },
-                { field: 'name', title: 'Name', sortable: true, minWidth: 120, priority: 5},
-                { field: 'address1', title: 'Address 1', minWidth: 150, priority: 6 },
-                { field: 'city', title: 'City', minWidth: 80, priority: 7 },
-                { field: 'country', title: 'Country', minWidth: 80, priority: 10 },
-                { field: 'zipCode', title: 'Zip Code', minWidth: 80, priority: 8 },
-                { field: 'telephone', title: 'Telephone', minWidth: 80, priority: 9 },
-                { field: 'remarks', title: 'Remarks', width: 120, editor: true, priority: 2 },
+                { field: 'name', title: 'Name', sortable: true, editor: true, minWidth: 80, priority: 5},
+                { field: 'address1', title: 'Address 1', editor: true, minWidth: 80, priority: 6 },
+                { field: 'zipCode', title: 'Zip Code', editor: true, minWidth: 80, priority: 8 },
+                { field: 'city', title: 'City', editor: true, minWidth: 80, priority: 7 },
+                { field: 'country', title: 'Country', editor: true, minWidth: 80, priority: 70 },
+                { field: 'telephone', title: 'Telephone', editor: true, minWidth: 80, priority: 80 },
+                { field: 'remarks', title: 'Remarks', editor: true, width: 120, priority: 2 },
                 { width: 100, align: 'center', renderer: editManager }
             ],
             pager: {
@@ -119,9 +120,6 @@
         });
         grid.on('rowDataChanged', function (e, id, record) {
             $.ajax({ url: '/Orders/Save/@Model.OrderId', data: { record: record }, method: 'POST' })
-                .done(function () {
-                    grid.reload();
-                })
                 .fail(function () {
                     alert('Failed to save.');
                 });

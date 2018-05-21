@@ -11,6 +11,9 @@ namespace WazaloOrdering.Client.Models
         [Display(Name = "Id")]
         public long OrderId { get; set; }
 
+        [Display(Name = "Order Name")]
+        public string OrderName { get; set; }
+
         [Display(Name = "To")]
         public string EmailTo { get; set; }
 
