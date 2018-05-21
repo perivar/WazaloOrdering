@@ -43,15 +43,15 @@
     </div>
 </div>
 
-<div class="container">
-    <div class="row justify-content-start mt-4">
-        <div class="col-md-12">
-            <h3>(Optional) Step 3. Change the email</h3>
+<form method="post">
+    <div class="container">
+        <div class="row justify-content-start mt-4">
+            <div class="col-md-12">
+                <h3>(Optional) Step 3. Change the email</h3>
+            </div>
         </div>
-    </div>
-    <div class="row justify-content-start">
-        <div class="col-12">
-            <form method="post">
+        <div class="row justify-content-start">
+            <div class="col-12">
                 <div class="form-group">
                     <input asp-for="OrderId" type="hidden">
                     <input asp-for="OrderName" type="hidden">
@@ -64,26 +64,26 @@
                     <label asp-for="EmailBody">Email Body:</label>
                     <textarea asp-for="EmailBody" class="form-control" rows="12"></textarea>
                 </div>
-            </form>
+            </div>
+        </div>
+        <div class="row justify-content-start mt-4">
+            <div class="col-md-6">
+                <h3>Step 4. Send the email</h3>
+            </div>
+            <div class="col-md-6">
+                <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
+            </div>
+        </div>
+        <div class="row justify-content-start mt-4">
+            <div class="col-md-6">
+                <strong>(Optional)</strong> Export the purhase order line items and send email manually
+            </div>
+            <div class="col-md-6">
+                <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-warning btn-sm">Export Purchase Order</button>
+            </div>
         </div>
     </div>
-    <div class="row justify-content-start mt-4">
-        <div class="col-md-6">
-            <h3>Step 4. Send the email</h3>
-        </div>
-        <div class="col-md-6">
-            <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
-        </div>
-    </div>
-    <div class="row justify-content-start mt-4">
-        <div class="col-md-6">
-            <strong>(Optional)</strong> Export the purhase order line items and send email manually
-        </div>
-        <div class="col-md-6">
-            <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-warning btn-sm">Export Purchase Order</button>
-        </div>
-    </div>
-</div>
+</form>
                 
 @section Scripts {
 <script type="text/javascript">
@@ -149,8 +149,7 @@
                 { field: 'zipCode', title: 'Zip Code', editor: true, minWidth: 80, priority: 8 },
                 { field: 'city', title: 'City', editor: true, minWidth: 80, priority: 7 },
                 { field: 'country', title: 'Country', editor: true, minWidth: 80, priority: 70 },
-                { field: 'telephone', title: 'Telephone', editor: true, minWidth: 80, priority: 80 },
-                { field: 'remarks', title: 'Remarks', editor: true, width: 120, priority: 2 },
+                { field: 'telephone', title: 'Telephone', editor: true, minWidth: 80, priority: 80 },                
                 { width: 100, align: 'center', renderer: editManager }
             ],
             pager: {

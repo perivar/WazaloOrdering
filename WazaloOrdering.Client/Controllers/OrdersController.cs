@@ -284,6 +284,15 @@ namespace WazaloOrdering.Client.Controllers
                 purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
             }
 
+            // set a note attribute property
+            var noteAttributes = new List<NoteAttribute>() {
+                new NoteAttribute() {
+                    Name = "Exported",
+                    Value = "True"
+                }
+            };
+            var orderUpdated = DataFactory.SetOrderNoteAttributes(appConfig, model.OrderId, noteAttributes);
+
             return ExportPurchaseOrderAction(purchaseOrderLineItems);
         }
 

@@ -50,7 +50,9 @@
         }
     </div>
     <div class="col-md-2">
-        @*Supplier:*@
+        @foreach(NoteAttribute noteAttribute in order.NoteAttributes) {
+            @noteAttribute.Name @noteAttribute.Value
+        }
     </div>
     <div class="col-md-2">
         @*Shipped: 0 / 0*@
