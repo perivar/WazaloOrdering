@@ -51,7 +51,7 @@
     </div>
     <div class="col-md-2">
         @foreach(NoteAttribute noteAttribute in order.NoteAttributes) {
-            @noteAttribute.Name @noteAttribute.Value
+            @noteAttribute.Name <span class="text-warning">@noteAttribute.Value</span>
         }
     </div>
     <div class="col-md-2">
