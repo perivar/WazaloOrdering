@@ -558,7 +558,9 @@ namespace WazaloOrdering.Client.Controllers
                 purchaseOrderLineItem.Country = Utils.GetNormalizedEquivalentPhrase(order.Customer.DefaultAddress.Country);
                 purchaseOrderLineItem.ZipCode = order.Customer.DefaultAddress.Zip;
                 purchaseOrderLineItem.Telephone = appConfig["PurchaseOrderTelephone"];
-                purchaseOrderLineItem.Remarks = Utils.GetNormalizedEquivalentPhrase(order.Note);
+                purchaseOrderLineItem.Remarks = appConfig["PurchaseOrderRemarks"]; // Utils.GetNormalizedEquivalentPhrase(order.Note);
+                purchaseOrderLineItem.BuyerName = appConfig["PurchaseOrderBuyerName"];
+                purchaseOrderLineItem.BuyerEmail = appConfig["PurchaseOrderBuyerEmail"];
 
                 purchaseOrderLineItems.Add(purchaseOrderLineItem);
             }
