@@ -146,10 +146,30 @@ namespace WazaloOrdering.Client.Controllers
             return View(model);
         }
 
-        public ActionResult FulfillmentModal(long Id)
+        // GET: /Orders/PurchaseOrder/402913919011
+        // Return the Fulfillment bootstrap modal content 
+        public ActionResult FulfillmentModal(long id)
         {
-            ViewBag.Id = Id;
-            return PartialView("FulfillmentModal");
+            var order = DataFactory.GetShopifyOrder(appConfig, id);
+            ViewBag.Id = id;
+            return PartialView(order);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Fulfillment()
+        {
+            if (!ModelState.IsValid)
+            {
+                // failed
+                return Content($" Model State is Invalid");
+            }
+
+            string emailTo = HttpContext.Request.Form["emailTo"];
+            string emailCC = HttpContext.Request.Form["emailCC"];
+            string emailBody = HttpContext.Request.Form["emailBody"];
+            return Content($"{emailTo}\n{emailCC}\n{emailBody}");
         }
 
         // GET: /Orders/MailPurchaseOrder/123134
@@ -237,6 +257,15 @@ namespace WazaloOrdering.Client.Controllers
 
                 ViewData["emailSent"] = true;
                 ViewData["to"] = to;
+
+                // set a note attribute property
+                var noteAttributes = new List<NoteAttribute>() {
+                    new NoteAttribute() {
+                        Name = "PurchaseOrderSent",
+                        Value = "True"
+                    }
+                };
+                var orderUpdated = DataFactory.SetOrderNoteAttributes(appConfig, model.OrderId, noteAttributes);
             }
             catch (System.Exception e)
             {

@@ -1,13 +1,60 @@
+@model Order
+@{
+    var order = @Model; 
+}
 <div class="modal-header">
     <h4 class="modal-title">Fulfill Order</h4>
     <button type="button" class="close" data-dismiss="modal">&times;</button>
 </div>
 <div class="modal-body">
-    <div class="form-horizontal">
-        Order @ViewBag.Id
-    </div>
+        Order @order.Name (@order.Id)
+        <form asp-controller="Orders" asp-action="Fulfillment" method="post" class="form-group" asp-route-id="@order.Id">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        @foreach(LineItem lineItem in order.LineItems) {
+                        <div class="row align-items-center bg-light text-dark border clickable-row" data-href="@Url.Action("Order", "Orders", new { Id = @order.Id})">
+                            <div class="col-md-2">
+                                @{ 
+                                    if (lineItem.ProductId.HasValue) {                        
+                                        <img width="100" class="img loadlater" data-src="/Images/Product/@lineItem.ProductId.Value"/>
+                                    }
+                                }
+                            </div>
+                            <div class="col-md-6"><span class="text-info">@lineItem.Title</span><br>@lineItem.VariantTitle<br><small>SKU: @lineItem.SKU</small></div>
+                            <div class="col-md-4">
+                                <div class="float-right">@lineItem.Quantity</div>
+                            </div>
+                        </div>
+                        }                        
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="trackingNumber">Tracking Number</label>
+                            <input type="email" class="form-control" id="trackingNumber" aria-describedby="trackingNumberHelp" placeholder="Enter tracking number">
+                            <small id="trackingNumberHelp" class="form-text text-muted">Add the tracking number received here.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="notifyCustomerCheck" checked="checked">
+                            <label class="form-check-label" for="notifyCustomerCheck">Notify Customer</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">Fulfill items</button>
+                    </div>
+                </div>
+            </div>            
+        </form>        
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 </div>
