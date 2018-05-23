@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Fulfillment";
+}
+
+<h2>Fulfillment from Wazalo.com</h2>
+<br>
+@if((bool)ViewData["fulfillmentSuccessful"]) {
+    <div class="alert alert-success">
+        <strong>Success!</strong> Fulfillment successful
+    </div>    
+} else {
+    <div class="alert alert-danger">
+        <strong>Error!</strong> @ViewData["errorMessage"].
+    </div>    
+}

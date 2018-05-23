@@ -49,13 +49,10 @@
         <span class="text-success">open</span>
         }
     </div>
-    <div class="col-md-2">
+    <div class="col-md-4">
         @foreach(NoteAttribute noteAttribute in order.NoteAttributes) {
             @noteAttribute.Name <span class="text-warning">@noteAttribute.Value</span>
         }
-    </div>
-    <div class="col-md-2">
-        @*Shipped: 0 / 0*@
     </div>
 </div>
 <div class="row">

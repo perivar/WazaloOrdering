@@ -5,7 +5,11 @@
 <h2>Purchase Order from Wazalo.com</h2>
 <br>
 @if((bool)ViewData["emailSent"]) {
-    <h3>Email sent succesfully to @ViewData["to"]</h3>
+    <div class="alert alert-success">
+        <strong>Success!</strong> Email sent succesfully to @ViewData["to"]
+    </div>
 } else {
-    <h3>@ViewData["message"]</h3>    
+    <div class="alert alert-danger">
+        <strong>Error!</strong> @ViewData["errorMessage"].
+    </div>    
 }

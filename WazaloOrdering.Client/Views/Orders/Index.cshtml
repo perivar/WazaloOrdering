@@ -74,7 +74,9 @@
         </div>
     </form>
 
-    @foreach(Order order in Model.ShopifyOrders) { @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) }
+    @foreach(Order order in Model.ShopifyOrders) { 
+        @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) 
+    }
 </div>
 
 @section Scripts { 

@@ -1,60 +1,68 @@
 @model Order
 @{
     var order = @Model; 
+    var lineItems = order.LineItems.ToList();
 }
 <div class="modal-header">
     <h4 class="modal-title">Fulfill Order</h4>
     <button type="button" class="close" data-dismiss="modal">&times;</button>
 </div>
-<div class="modal-body">
-        Order @order.Name (@order.Id)
-        <form asp-controller="Orders" asp-action="Fulfillment" method="post" class="form-group" asp-route-id="@order.Id">
-            <div class="container">
-                <div class="row">
-                    <div class="col">
-                        @foreach(LineItem lineItem in order.LineItems) {
-                        <div class="row align-items-center bg-light text-dark border clickable-row" data-href="@Url.Action("Order", "Orders", new { Id = @order.Id})">
-                            <div class="col-md-2">
-                                @{ 
-                                    if (lineItem.ProductId.HasValue) {                        
-                                        <img width="100" class="img loadlater" data-src="/Images/Product/@lineItem.ProductId.Value"/>
-                                    }
+ 
+<form asp-controller="Orders" asp-action="Fulfillment" method="post" class="form-group" asp-route-id="@order.Id">
+    <div class="modal-body">
+        <input name="orderId" type="hidden" value="@order.Id">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <strong>Order @order.Name (@order.Id)</strong>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    @for(var i = 0; i < lineItems.Count(); i++) {
+                    <div class="row align-items-center bg-light text-dark border clickable-row">
+                        <div class="col-3">
+                            @{ 
+                                if (lineItems[i].ProductId.HasValue) {                        
+                                    <img width="100" class="img loadlater" data-src="/Images/Product/@lineItems[i].ProductId.Value"/>
                                 }
+                            }
+                        </div>
+                        <div class="col-6"><span class="text-info">@lineItems[i].Title</span><br>@lineItems[i].VariantTitle<br><small>SKU: @lineItems[i].SKU</small></div>
+                        <div class="col-3">
+                            <input type="hidden" asp-for="@lineItems[i].Id" class="form-control" />
+                            <small><label asp-for="@lineItems[i].Quantity"></label></small>
+                            <div class="input-group input-group-sm">
+                                <input asp-for="@lineItems[i].Quantity" class="form-control" type="number" step="1", min="0", max="@lineItems[i].Quantity", aria-describedby="@lineItems[i].Id" value="0" />
+                                <div class="input-group-append">
+                                    <span class="input-group-text" id="@lineItems[i].Id">of @lineItems[i].Quantity</span>
+                                </div>
                             </div>
-                            <div class="col-md-6"><span class="text-info">@lineItem.Title</span><br>@lineItem.VariantTitle<br><small>SKU: @lineItem.SKU</small></div>
-                            <div class="col-md-4">
-                                <div class="float-right">@lineItem.Quantity</div>
-                            </div>
-                        </div>
-                        }                        
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <label for="trackingNumber">Tracking Number</label>
-                            <input type="email" class="form-control" id="trackingNumber" aria-describedby="trackingNumberHelp" placeholder="Enter tracking number">
-                            <small id="trackingNumberHelp" class="form-text text-muted">Add the tracking number received here.</small>
                         </div>
                     </div>
+                    }                        
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="notifyCustomerCheck" checked="checked">
-                            <label class="form-check-label" for="notifyCustomerCheck">Notify Customer</label>
-                        </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="trackingNumber">Tracking Number</label>
+                        <input name="trackingNumber" type="text" class="form-control" id="trackingNumber" placeholder="Enter tracking number">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col">
-                        <button type="submit" class="btn btn-primary">Fulfill items</button>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="form-check">
+                        <input name="notifyCustomer" type="checkbox" class="form-check-input" id="notifyCustomerCheck" checked="checked">
+                        <label class="form-check-label" for="notifyCustomerCheck">Notify Customer</label>
                     </div>
                 </div>
-            </div>            
-        </form>        
-</div>
-<div class="modal-footer">
-    <button type="button" class="btn btn-success" data-dismiss="modal">OK</button>
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-</div>
+            </div>
+        </div>            
+    </div>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Fulfill items</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    </div>
+</form>        

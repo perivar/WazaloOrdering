@@ -150,6 +150,9 @@ namespace WazaloOrdering.Client.Controllers
         // Return the Fulfillment bootstrap modal content 
         public ActionResult FulfillmentModal(long id)
         {
+            // TODO: We need to know the elements that are not fulfilled yet
+            // so all unfulfilled line items
+
             var order = DataFactory.GetShopifyOrder(appConfig, id);
             ViewBag.Id = id;
             return PartialView(order);
@@ -158,18 +161,46 @@ namespace WazaloOrdering.Client.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Fulfillment()
+        public ActionResult Fulfillment(List<LineItem> lineItems, long orderId, string trackingNumber, string notifyCustomer)
         {
             if (!ModelState.IsValid)
             {
-                // failed
-                return Content($" Model State is Invalid");
+                ViewData["fulfillmentSuccessful"] = false;
+                ViewData["errorMessage"] = "Model State is Invalid!";
+                return View();
             }
 
-            string emailTo = HttpContext.Request.Form["emailTo"];
-            string emailCC = HttpContext.Request.Form["emailCC"];
-            string emailBody = HttpContext.Request.Form["emailBody"];
-            return Content($"{emailTo}\n{emailCC}\n{emailBody}");
+            if (orderId == 0 || string.IsNullOrEmpty(trackingNumber) || lineItems.IsNullOrEmpty())
+            {
+                ViewData["fulfillmentSuccessful"] = false;
+                ViewData["errorMessage"] = "Missing fulfillment information!";
+                return View();
+            }
+
+            bool doNotifyCustomer = (!string.IsNullOrEmpty(notifyCustomer) && notifyCustomer.Equals("on") ? true : false);
+
+            bool successfull = false;
+            foreach (var lineItem in lineItems)
+            {
+                if (lineItem.Id.HasValue && lineItem.Quantity.HasValue && lineItem.Quantity.Value > 0)
+                {
+                    var fulfillment = DataFactory.FulfillOrderPartially(appConfig, orderId, lineItem.Id.Value, lineItem.Quantity.Value, trackingNumber, doNotifyCustomer);
+                    if (fulfillment.Id.HasValue && fulfillment.TrackingNumber == trackingNumber)
+                    {
+                        // succesfull 
+                        successfull = true;
+                    }
+                    else
+                    {
+                        successfull = false;
+                        break;
+                    }
+                }
+            }
+
+            ViewData["fulfillmentSuccessful"] = successfull;
+            ViewData["errorMessage"] = "One or more of the fulfillment failed!";
+            return View();
         }
 
         // GET: /Orders/MailPurchaseOrder/123134
