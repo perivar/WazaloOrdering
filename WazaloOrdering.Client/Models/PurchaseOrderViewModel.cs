@@ -23,6 +23,9 @@ namespace WazaloOrdering.Client.Models
         [Display(Name = "Body")]
         public string EmailBody { get; set; }
 
+        [Display(Name = "Total Cost")]
+        public decimal TotalCost { get; set; }
+
         public List<PurchaseOrderLineItem> PurchaseOrderLineItems { get; set; }
     }
 }

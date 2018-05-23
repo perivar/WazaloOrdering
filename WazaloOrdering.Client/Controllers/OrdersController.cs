@@ -122,9 +122,15 @@ namespace WazaloOrdering.Client.Controllers
         public IActionResult PurchaseOrder(long id)
         {
             var order = DataFactory.GetShopifyOrder(appConfig, id);
-            var purchaseOrders = GetPurchaseOrderLineItemsFromShopifyOrder(order);
+            var purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
 
-            // TODO: Due to the grid using ajax rest calls, it shouldn't be neccesary to load the order at all her
+            // TODO: Due to the grid using ajax rest calls, it shouldn't be neccesary to load the order at all here
+            // except right now we are using it to calculate the total cost     
+            decimal totalCost = 0;
+            foreach (var purchaseOrderLineItem in purchaseOrderLineItems)
+            {
+                totalCost += purchaseOrderLineItem.PriceUSD;
+            }
 
             var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
             var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
@@ -140,7 +146,8 @@ namespace WazaloOrdering.Client.Controllers
                 EmailTo = purchaseOrderEmailTo,
                 EmailCC = purchaseOrderEmailCC,
                 EmailBody = emailNote,
-                PurchaseOrderLineItems = purchaseOrders
+                TotalCost = totalCost,
+                PurchaseOrderLineItems = purchaseOrderLineItems
             };
 
             return View(model);
@@ -343,15 +350,6 @@ namespace WazaloOrdering.Client.Controllers
                 var order = DataFactory.GetShopifyOrder(appConfig, model.OrderId);
                 purchaseOrderLineItems = GetPurchaseOrderLineItemsFromShopifyOrder(order);
             }
-
-            // set a note attribute property
-            var noteAttributes = new List<NoteAttribute>() {
-                new NoteAttribute() {
-                    Name = "Exported",
-                    Value = "True"
-                }
-            };
-            var orderUpdated = DataFactory.SetOrderNoteAttributes(appConfig, model.OrderId, noteAttributes);
 
             return ExportPurchaseOrderAction(purchaseOrderLineItems);
         }
@@ -619,7 +617,7 @@ namespace WazaloOrdering.Client.Controllers
 
                 // get agreed usd price
                 var priceUSD = GetLineItemAgreedPriceUSD(lineItem);
-                purchaseOrderLineItem.PriceUSD = string.Format(new CultureInfo("en-US", false), "{0:C}", priceUSD);
+                purchaseOrderLineItem.PriceUSD = priceUSD; //string.Format(new CultureInfo("en-US", false), "{0:C}", priceUSD);
 
                 purchaseOrderLineItem.Name = Utils.GetNormalizedEquivalentPhrase(order.Customer.FirstName + " " + order.Customer.LastName);
                 purchaseOrderLineItem.Address1 = Utils.GetNormalizedEquivalentPhrase(order.Customer.DefaultAddress.Address1);

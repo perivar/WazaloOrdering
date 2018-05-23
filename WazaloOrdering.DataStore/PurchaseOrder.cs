@@ -10,7 +10,7 @@ namespace WazaloOrdering.Client.Models
         public string OrderID { get; set; }
         public string SKU { get; set; }
         public int Quantity { get; set; }
-        public string PriceUSD { get; set; }
+        public decimal PriceUSD { get; set; }
         public string Price { get; set; }
         public string Name { get; set; }
         public string Address1 { get; set; }

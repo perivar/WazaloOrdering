@@ -41,6 +41,13 @@
             <table id="grid" class="table table-bordered table-hover table-sm"></table>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-primary" role="alert">
+                <strong>Total Cost (USD): @Model.TotalCost</strong>
+            </div>            
+        </div>
+    </div>
 </div>
 
 <form method="post">
@@ -149,7 +156,6 @@
                 { field: 'zipCode', title: 'Zip Code', editor: true, minWidth: 80, priority: 8 },
                 { field: 'city', title: 'City', editor: true, minWidth: 80, priority: 7 },
                 { field: 'country', title: 'Country', editor: true, minWidth: 80, priority: 70 },
-                { field: 'telephone', title: 'Telephone', editor: true, minWidth: 80, priority: 80 },                
                 { width: 100, align: 'center', renderer: editManager }
             ],
             pager: {
