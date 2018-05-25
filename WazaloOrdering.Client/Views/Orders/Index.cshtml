@@ -74,8 +74,14 @@
         </div>
     </form>
 
-    @foreach(Order order in Model.ShopifyOrders) { 
-        @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) 
+    @if (Model.ShopifyOrders != null) {
+        @foreach(Order order in Model.ShopifyOrders) { 
+            @await Html.PartialAsync( "OrderPartial", order, new ViewDataDictionary(this.ViewData) { { "orderPage", false } } ) 
+        }
+    } else {
+        <div class="alert alert-warning" role="alert">
+            <strong>No orders found!</strong>
+        </div>
     }
 </div>
 

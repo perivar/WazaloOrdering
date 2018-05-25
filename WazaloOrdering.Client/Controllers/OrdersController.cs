@@ -41,21 +41,41 @@ namespace WazaloOrdering.Client.Controllers
             model.DateEnd = Utils.AbsoluteEnd(fromto.Item2);
             model.Filter = filter;
 
-            FillStatusLists(model, fulfillmentStatusId, financialStatusId, statusId);
-
-            // add date filter, created_at_min and created_at_max
-            var orderFilter = new OrderFilter()
+            IEnumerable<Order> orders = null;
+            if (!string.IsNullOrEmpty(filter))
             {
-                CreatedAtMin = model.DateStart,
-                CreatedAtMax = model.DateEnd,
-                FulfillmentStatus = model.FulfillmentStatusId,
-                FinancialStatus = model.FinancialStatusId,
-                Status = model.StatusId
-            };
+                FillStatusLists(model, "any", "any", "any");
 
-            var orders = DataFactory.GetShopifyOrders(appConfig, orderFilter);
+                var order = DataFactory.GetShopifyOrder(appConfig, filter);
+                if (order != null)
+                {
+                    orders = new List<Order>() {
+                        order
+                    };
+                }
+                else
+                {
+                    return View(model);
+                }
+            }
+            else
+            {
+                FillStatusLists(model, fulfillmentStatusId, financialStatusId, statusId);
+
+                // add date filter, created_at_min and created_at_max
+                var orderFilter = new OrderFilter()
+                {
+                    CreatedAtMin = model.DateStart,
+                    CreatedAtMax = model.DateEnd,
+                    FulfillmentStatus = model.FulfillmentStatusId,
+                    FinancialStatus = model.FinancialStatusId,
+                    Status = model.StatusId
+                };
+
+                orders = DataFactory.GetShopifyOrders(appConfig, orderFilter);
+            }
+
             model.ShopifyOrders = orders;
-
             return View(model);
         }
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,36 @@ namespace WazaloOrdering.DataStore
 
             var service = new OrderService(shopifyDomain, shopifyAPIPassword);
             return await service.GetAsync(orderId);
+        }
+
+        public static async Task<Order> GetShopifyOrder(IConfiguration appConfig, string orderName)
+        {
+            // get shopify configuration parameters
+            string shopifyDomain = appConfig["ShopifyDomain"];
+            string shopifyAPIPassword = appConfig["ShopifyAPIPassword"];
+
+            string url = String.Format("https://{0}/admin/orders.json?name={1}&status=any", shopifyDomain, orderName);
+
+            using (var client = new HttpClient())
+            {
+                var msg = new HttpRequestMessage(method: HttpMethod.Get, requestUri: url);
+                msg.Headers.Add("X-Shopify-Access-Token", shopifyAPIPassword);
+                msg.Headers.Add("Accept", "application/json");
+
+                // request message is now ready to be sent via HttpClient
+                HttpResponseMessage response = client.SendAsync(msg).Result;
+
+                var rawResult = await response.Content.ReadAsStringAsync();
+
+                ShopifyService.CheckResponseExceptions(response, rawResult);
+
+                var serializer = new JsonSerializer { DateParseHandling = DateParseHandling.DateTimeOffset };
+                var reader = new JsonTextReader(new StringReader(rawResult));
+                var data = serializer.Deserialize<JObject>(reader).SelectToken("orders");
+                var result = data.ToObject<List<Order>>();
+
+                return result.FirstOrDefault();
+            }
         }
 
         public static async Task<IEnumerable<Order>> GetShopifyOrders(IConfiguration appConfig, OrderFilter filter)

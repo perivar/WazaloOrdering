@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using ShopifySharp;
@@ -21,6 +22,19 @@ namespace WazaloOrdering.DataStore
             }
         }
 
+        public static Order GetShopifyOrder(IConfiguration appConfig, string orderName)
+        {
+            try
+            {
+                orderName = Regex.Match( orderName, @"\d+" ).Value;
+                return Shopify.GetShopifyOrder(appConfig, orderName).GetAwaiter().GetResult();
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+    
         public static IEnumerable<Order> GetShopifyOrders(IConfiguration appConfig, OrderFilter filter)
         {
             try
