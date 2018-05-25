@@ -1,1 +1,1 @@
-[data-toggle="collapse"]:after{font-family:"Font Awesome 5 Free";font-weight:900;content:""}[data-toggle="collapse"].collapsed:after{content:""}
+[data-toggle="collapse"] .fas:before{font-family:"Font Awesome 5 Free";font-weight:900;content:""}[data-toggle="collapse"].collapsed .fas:before{font-family:"Font Awesome 5 Free";font-weight:900;content:""}

@@ -7,34 +7,8 @@
             
 <div class="container">
     <div class="row justify-content-start mt-3">
-        <div class="col-md-6">
-            <h3>Step 1. Pay using Paypal</h3>
-        </div>
-        <div class="col-md-2">
-            <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
-        </div>        
-    </div>
-    <div class="row justify-content-start mt-3">
-        <div class="col-md-8">
-            Use <mark>Send Money</mark> for <mark>Goods and Services</mark> to <code>master@aiminyz.com</code>
-        </div>
-    </div>
-    <div class="row justify-content-start mt-3">
-        <div class="col-md-8">
-            With a note:<br> 
-            <div role="wrapper" class="input-group mb-3">
-                <input readonly class="form-control border-right-0 border" type="text" id="textToCopy" value="Purchase Order: @Model.OrderName">
-                <div class="input-group-append" role="right-icon">
-                    <button class="btn btn-outline-secondary border-left-0 border" type="button" data-clipboard-target="#textToCopy">
-                        <i class="fas fa-clipboard"></i>
-                    </button>      
-                </div>                
-            </div>
-        </div>        
-    </div>
-    <div class="row justify-content-start mt-3">
         <div class="col-md-12">
-            <h3>Step 2. Check and optionally edit the line items</h3>
+            <h3>Step 1. Check and optionally edit the line items</h3>
         </div>
     </div>
 </div>  
@@ -55,11 +29,39 @@
 
 <form method="post">
     <div class="container">
-        <div class="row justify-content-start mt-4">
-            <div class="col-md-12">
-                <div class="collapsed" data-toggle="collapse" href="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
-                    <h3>Step 3. Change the email (Optional) <i class="fas fa-chevron-up" aria-hidden="true"></i></h3>                    
+        <div class="row justify-content-start mt-3">
+            <div class="col-md-6">
+                <h3>Step 2. Pay using Paypal</h3>
+            </div>
+            <div class="col-md-2">
+                <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
+            </div>        
+        </div>
+        <div class="row justify-content-start mt-3">
+            <div class="col-md-8">
+                Use <strong>Send Money</strong> for <strong>Goods and Services</strong> to <strong>master@aiminyz.com</strong>
+                <br>
+                Send in total: <mark><strong>@Model.TotalCost USD</strong></mark>
+            </div>
+        </div>
+        <div class="row justify-content-start mt-3">
+            <div class="col-md-8">
+                With a note:<br> 
+                <div role="wrapper" class="input-group mb-3">
+                    <input readonly class="form-control border-right-0 border" type="text" id="textToCopy" value="Purchase Order: @Model.OrderName">
+                    <div class="input-group-append" role="right-icon">
+                        <button class="btn btn-outline-secondary border-left-0 border" type="button" data-clipboard-target="#textToCopy">
+                            <i class="fas fa-clipboard"></i>
+                        </button>      
+                    </div>                
                 </div>
+            </div>        
+        </div>
+        <div class="row justify-content-start mt-3">
+            <div class="col-md-12">
+                <a class="collapsed" data-toggle="collapse" href="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
+                    <h3>Step 3. Change the email (Optional) <i class="fas fa-chevron-up" aria-hidden="true"></i></h3>                    
+                </a>
             </div>
         </div>
         <div id="collapseMail" class="row justify-content-start collapse">
