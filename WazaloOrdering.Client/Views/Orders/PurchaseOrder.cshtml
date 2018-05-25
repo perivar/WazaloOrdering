@@ -3,25 +3,33 @@
     ViewData["Title"] = "Purchase Order"; 
 }
 
-<h2>Purchase Order from Wazalo to Aiminyz</h2>
+<h2>Purchase Order to Aiminyz</h2>
             
 <div class="container">
     <div class="row justify-content-start mt-3">
         <div class="col-md-6">
             <h3>Step 1. Pay using Paypal</h3>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-2">
             <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
         </div>        
     </div>
     <div class="row justify-content-start mt-3">
-        <div class="col-md-12">
+        <div class="col-md-8">
             Use <mark>Send Money</mark> for <mark>Goods and Services</mark> to <code>master@aiminyz.com</code>
         </div>
     </div>
     <div class="row justify-content-start mt-3">
-        <div class="col-md-12">
-            With a note: <code>Purchase Order: @Model.OrderName</code>
+        <div class="col-md-8">
+            With a note:<br> 
+            <div role="wrapper" class="input-group mb-3">
+                <input readonly class="form-control border-right-0 border" type="text" id="textToCopy" value="Purchase Order: @Model.OrderName">
+                <div class="input-group-append" role="right-icon">
+                    <button class="btn btn-outline-secondary border-left-0 border" type="button" data-clipboard-target="#textToCopy">
+                        <i class="fas fa-clipboard"></i>
+                    </button>      
+                </div>                
+            </div>
         </div>        
     </div>
     <div class="row justify-content-start mt-3">
@@ -30,11 +38,6 @@
         </div>
     </div>
 </div>  
-@*<a class="btn btn-warning" asp-controller="Orders" asp-action="MailPurchaseOrder" asp-route-id="@ViewData["id"]">Mail Purchase Order</a>
-<br>
-<br>
-<a class="btn btn-warning" asp-controller="Orders" asp-action="ExportPurchaseOrder" asp-route-id="@ViewData["id"]">Export Purchase Order</a> 
-*@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
@@ -54,10 +57,12 @@
     <div class="container">
         <div class="row justify-content-start mt-4">
             <div class="col-md-12">
-                <h3>(Optional) Step 3. Change the email</h3>
+                <div class="collapsed" data-toggle="collapse" href="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
+                    <h3>Step 3. Change the email (Optional) <i class="fas fa-chevron-up" aria-hidden="true"></i></h3>                    
+                </div>
             </div>
         </div>
-        <div class="row justify-content-start">
+        <div id="collapseMail" class="row justify-content-start collapse">
             <div class="col-12">
                 <div class="form-group">
                     <input asp-for="OrderId" type="hidden">
@@ -99,8 +104,8 @@
 
         editManager = function(value, record, $cell, $displayEl, id, $grid) {
             var data = $grid.data(),
-                $edit = $('<button class="btn btn-light btn-sm"><i class="fas fa-pencil-alt"></i></button>').attr('data-key', id),
-                $delete = $('<button class="btn btn-light btn-sm"><i class="fas fa-trash-alt"></i></button>').attr('data-key', id),
+                $edit = $('<button class="btn btn-outline-secondary btn-sm border-0"><i class="fas fa-pencil-alt"></i></button>').attr('data-key', id),
+                $delete = $('<button class="btn btn-outline-secondary btn-sm border-0"><i class="fas fa-trash-alt"></i></button>').attr('data-key', id),
                 $update = $('<button class="btn btn-success btn-sm"><i class="fas fa-check"></i></button>').attr('data-key', id).hide(),
                 $cancel = $('<button class="btn btn-danger btn-sm"><i class="fas fa-times"></i></button>').attr('data-key', id).hide();
 
@@ -169,7 +174,7 @@
                 });
         });
         grid.on('rowRemoving', function (e, $row, id, record) {            
-            if (confirm('Are you sure?')) {
+            if (confirm('Are you sure you want to delete?')) {
                 $.ajax({ url: '/Orders/Delete/@Model.OrderId', data: { id: id }, method: 'POST' })
                     .done(function () {
                         grid.reload();
@@ -184,6 +189,8 @@
             uiLibrary: 'bootstrap4',
             height: 380
         });
+
+        new ClipboardJS('.btn');
 
     });
 </script>

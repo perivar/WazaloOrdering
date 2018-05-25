@@ -21,15 +21,8 @@
                 <div class="col">
                     @for(var i = 0; i < lineItems.Count(); i++) {
                     <div class="row align-items-center bg-light text-dark border clickable-row">
-                        <div class="col-3">
-                            @{ 
-                                if (lineItems[i].ProductId.HasValue) {                        
-                                    <img width="100" class="img loadlater" data-src="/Images/Product/@lineItems[i].ProductId.Value"/>
-                                }
-                            }
-                        </div>
-                        <div class="col-6"><span class="text-info">@lineItems[i].Title</span><br>@lineItems[i].VariantTitle<br><small>SKU: @lineItems[i].SKU</small></div>
-                        <div class="col-3">
+                        <div class="col-8"><span class="text-info">@lineItems[i].Title</span><br>@lineItems[i].VariantTitle<br><small>SKU: @lineItems[i].SKU</small></div>
+                        <div class="col-4">
                             <input type="hidden" asp-for="@lineItems[i].Id" class="form-control" />
                             <small><label asp-for="@lineItems[i].Quantity"></label></small>
                             <div class="input-group input-group-sm">

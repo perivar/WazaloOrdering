@@ -1,1 +1,12 @@
 /* site specific css */
+[data-toggle="collapse"] .fas:before {   
+    font-family: "Font Awesome 5 Free"; /* essential to enable caret symbol*/
+    font-weight: 900; 
+    content: "\f077";
+}
+  
+[data-toggle="collapse"].collapsed .fas:before {
+    font-family: "Font Awesome 5 Free"; /* essential to enable caret symbol*/
+    font-weight: 900; 
+    content: "\f078";
+}

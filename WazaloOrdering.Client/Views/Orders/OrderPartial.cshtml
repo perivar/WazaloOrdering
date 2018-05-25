@@ -16,12 +16,14 @@
     </div>
         @if(isOrderPage) {
             <div class="col-md-6">
-                <a class="btn btn-warning float-right" asp-controller="Orders" asp-action="PurchaseOrder" asp-route-id="@order.Id">Create Purchase Order</a>
+                <div class="float-right"><a class="btn btn-info" asp-controller="Orders" asp-action="PurchaseOrder" asp-route-id="@order.Id">Create Purchase Order</a></div>
             </div>            
         } else {
             <div class="col-md-6">
                 <div class="float-right"><a class="btn btn-info" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">View Order</a></div>
-                <div class="float-right mr-2"><a class="btn btn-warning" asp-controller="Orders" asp-action="FulfillmentModal" asp-route-id="@order.Id" data-target="#modal-container" data-toggle="modal">Fulfill Order</a></div>
+                @if(order.FulfillmentStatus == null) {
+                    <div class="float-right mr-2"><a class="btn btn-warning" asp-controller="Orders" asp-action="FulfillmentModal" asp-route-id="@order.Id" data-target="#modal-container" data-toggle="modal">Fulfill Order</a></div>
+                }
             </div>
         }            
 </div>
@@ -85,6 +87,6 @@
 </div>
 <div class="row">
     <div class="col-md-12">
-        <div class="float-right"><small>Total Cost: </small>@order.TotalPrice</div>
+        <div class="float-right"><small>Total Cost:</small> @order.TotalPrice</div>
     </div>
 </div>
