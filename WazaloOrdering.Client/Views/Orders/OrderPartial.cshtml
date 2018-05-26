@@ -2,6 +2,13 @@
 @{
     var order = @Model;
     var isOrderPage = (bool)ViewData["orderPage"];
+
+    var purchaseOrderSent = false;
+    foreach(NoteAttribute noteAttribute in order.NoteAttributes) {
+        if (noteAttribute.Name.Equals("PurchaseOrderSent") && noteAttribute.Value.Equals("True")) {
+            purchaseOrderSent = true;
+        }
+    }
 }
 
 <div class="row align-items-center mt-3">
@@ -20,8 +27,12 @@
             </div>            
         } else {
             <div class="col-md-6">
-                <div class="float-right"><a class="btn btn-info" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">View Order</a></div>
-                @if(order.FulfillmentStatus == null) {
+                @if (purchaseOrderSent) {
+                    <div class="float-right"><a class="btn btn-info" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">View Order</a></div>
+                } else {
+                    <div class="float-right"><a class="btn btn-info" asp-controller="Orders" asp-action="Order" asp-route-id="@order.Id">Buy Products</a></div>
+                }
+                @if(purchaseOrderSent && order.FulfillmentStatus == null) {
                     <div class="float-right mr-2"><a class="btn btn-warning" asp-controller="Orders" asp-action="FulfillmentModal" asp-route-id="@order.Id" data-target="#modal-container" data-toggle="modal">Fulfill Order</a></div>
                 }
             </div>

@@ -34,7 +34,7 @@
                 <h3>Step 2. Pay using Paypal</h3>
             </div>
             <div class="col-md-2">
-                <a class="btn btn-primary" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay on Paypal</a>
+                <a class="btn btn-primary float-right" href="https://www.paypal.com/myaccount/transfer/homepage/send" role="button" target="_blank">Pay using Paypal</a>
             </div>        
         </div>
         <div class="row justify-content-start mt-3">
@@ -58,14 +58,14 @@
             </div>        
         </div>
         <div class="row justify-content-start mt-3">
-            <div class="col-md-12">
+            <div class="col-md-8">
                 <a class="collapsed" data-toggle="collapse" href="#collapseMail" aria-expanded="false" aria-controls="collapseMail">
                     <h3>Step 3. Change the email (Optional) <i class="fas fa-chevron-up" aria-hidden="true"></i></h3>                    
                 </a>
             </div>
         </div>
         <div id="collapseMail" class="row justify-content-start collapse">
-            <div class="col-12">
+            <div class="col-8">
                 <div class="form-group">
                     <input asp-for="OrderId" type="hidden">
                     <input asp-for="OrderName" type="hidden">
@@ -84,16 +84,16 @@
             <div class="col-md-6">
                 <h3>Step 4. Send the email</h3>
             </div>
-            <div class="col-md-6">
-                <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary">Mail Purchase Order</button>
+            <div class="col-md-2">
+                <button asp-controller="Orders" asp-action="MailPurchaseOrder" class="btn btn-primary float-right">Mail Purchase Order</button>
             </div>
         </div>
         <div class="row justify-content-start mt-4">
             <div class="col-md-6">
                 <strong>(Optional)</strong> Export the purhase order line items and send email manually
             </div>
-            <div class="col-md-6">
-                <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-warning btn-sm">Export Purchase Order</button>
+            <div class="col-md-2">
+                <button asp-controller="Orders" asp-action="ExportPurchaseOrder" class="btn btn-warning btn-sm float-right">Export Purchase Order</button>
             </div>
         </div>
     </div>
