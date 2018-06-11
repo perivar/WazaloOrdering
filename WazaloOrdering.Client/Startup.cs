@@ -35,10 +35,6 @@ namespace WazaloOrdering.Client
                 options.Conventions.AllowAnonymousToPage("/Home/Login");
             });
 
-            // An IConfiguration instance will be added to the services container by default in ASP.NET Core 2.0, 
-            // so that all applications can easily retrieve configuration values via the container
-            //services.AddSingleton<IConfiguration>(Configuration);
-
             // Adds a default in-memory implementation of IDistributedCache.
             services.AddDistributedMemoryCache();
 
@@ -75,7 +71,7 @@ namespace WazaloOrdering.Client
             // IMPORTANT: This session call MUST go before UseMvc()
             app.UseSession();
 
-            // the efault route is sufficient
+            // the default route is sufficient
             // {controller=Home}/{action=Index}/{id?}
             app.UseMvcWithDefaultRoute();
         }
