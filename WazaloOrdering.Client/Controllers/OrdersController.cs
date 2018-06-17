@@ -214,7 +214,7 @@ namespace WazaloOrdering.Client.Controllers
                     var fulfillment = DataFactory.FulfillOrderPartially(appConfig, orderId, lineItem.Id.Value, lineItem.Quantity.Value, trackingNumber, doNotifyCustomer);
                     if (fulfillment.Id.HasValue && fulfillment.TrackingNumber == trackingNumber)
                     {
-                        // succesfull 
+                        // successfull 
                         successfull = true;
                     }
                     else
@@ -238,7 +238,7 @@ namespace WazaloOrdering.Client.Controllers
             var purchaseOrderEmailTo = appConfig["PurchaseOrderEmailTo"];
             var purchaseOrderEmailCC = appConfig["PurchaseOrderEmailCC"];
 
-            // read multiline string from jsong config file
+            // read multiline string from json config file
             var purchaseOrderEmailNote = appConfig.GetSection("PurchaseOrderEmailNote").Get<string[]>();
             var emailNote = string.Join("\n", purchaseOrderEmailNote);
 
@@ -674,7 +674,7 @@ namespace WazaloOrdering.Client.Controllers
                         case "115-125":
                         case "125-135":
                         case "135-145":
-                            return 9;
+                            return 15;
                         default:
                             return 18;
                     }

@@ -1,6 +1,7 @@
 using System;
 using CsvHelper;
 using CsvHelper.Configuration;
+using CsvHelper.TypeConversion;
 
 namespace WazaloOrdering.Client.Models
 {
@@ -45,6 +46,31 @@ namespace WazaloOrdering.Client.Models
             Map(m => m.Remarks).Name("Remarks");
             Map(m => m.BuyerName).Name("Buyer Name");
             Map(m => m.BuyerEmail).Name("Buyer Email");
+        }
+    }
+
+    // see https://stackoverflow.com/questions/49049123/csvhelper-writing-null-strings-as-special-string
+    // .TypeConverter<CustomNullTypeConverter<string>>();
+    public class CustomNullTypeConverter<T> : DefaultTypeConverter
+    {
+        public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+        {
+            if (value == null)
+            {
+                return "#NULL#";
+            }
+
+            var converter = row.Configuration.TypeConverterCache.GetConverter<T>();
+            return converter.ConvertToString(value, row, memberMapData);
+        }
+    }
+
+    // .TypeConverter<CustomTextTypeConverter<string>>();
+    public class CustomTextTypeConverter<T> : DefaultTypeConverter
+    {
+        public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
+        {
+            return string.Format("'{0}", value);
         }
     }
 }
